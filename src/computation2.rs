@@ -43,7 +43,8 @@ where
     where
         R: 'i,
     {
-        todo!()
+        let reduction = R::default();
+        self.compute_reduce(&reduction, input)
     }
 
     fn compute_reduce<'i>(&self, reduction: &R, (in1, in2): Self::In<'i>) -> <R as Reduction>::Out

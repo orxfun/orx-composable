@@ -1,5 +1,5 @@
-pub trait Reduction {
-    type Out;
+pub trait Reduction: Default {
+    type Out: Default;
 
     fn identity(&self) -> Self::Out;
 

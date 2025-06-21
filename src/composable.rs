@@ -43,4 +43,8 @@ where
     pub fn input_builder(&self) -> Input<()> {
         Input(())
     }
+
+    pub fn compute<'i>(&self, input: Input<C::In<'i>>) -> R::Out {
+        self.computation.compute(input.0)
+    }
 }

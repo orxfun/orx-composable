@@ -17,7 +17,7 @@ where
     where
         R: 'i,
     {
-        todo!()
+        <R as Reduction>::Out::default()
     }
 
     fn compute_reduce<'i>(&self, reduction: &R, _: Self::In<'i>) -> <R as Reduction>::Out
