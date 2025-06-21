@@ -1,4 +1,4 @@
-use crate::reduce::Reduce;
+use crate::{compute::Compute, reduce::Reduce};
 use std::marker::PhantomData;
 
 pub trait ComputeReduce: Sized {
@@ -18,6 +18,12 @@ pub trait ComputeReduce: Sized {
 }
 
 pub struct ComputeReduce0<R: Reduce>(PhantomData<R>);
+
+impl<R: Reduce> Default for ComputeReduce0<R> {
+    fn default() -> Self {
+        Self(Default::default())
+    }
+}
 
 impl<R: Reduce> ComputeReduce for ComputeReduce0<R> {
     type R = R;
@@ -39,30 +45,26 @@ impl<R: Reduce> ComputeReduce for ComputeReduce0<R> {
 pub struct ComputeReduce1<R, C>(C, PhantomData<R>)
 where
     R: Reduce,
-    C: ComputeReduce<R = R>;
+    C: Compute<Out = R::Unit>;
 
 impl<R, C> ComputeReduce for ComputeReduce1<R, C>
 where
     R: Reduce,
-    C: ComputeReduce<R = R>,
+    C: Compute<Out = R::Unit>,
 {
     type R = R;
 
     type In<'i> = C::In<'i>;
 
-    fn compute_reduce<'i>(
-        &self,
-        reduce: &Self::R,
-        input: Self::In<'_>,
-    ) -> <Self::R as Reduce>::Unit {
-        self.0.compute_reduce(reduce, input)
+    fn compute_reduce<'i>(&self, _: &Self::R, input: Self::In<'_>) -> <Self::R as Reduce>::Unit {
+        self.0.compute(input)
     }
 
     fn compose<C2>(self, other: C2) -> impl ComputeReduce<R = Self::R>
     where
         C2: ComputeReduce<R = Self::R>,
     {
-        ComputeReduce2(self.0, other, PhantomData)
+        ComputeReduce2(self, other, PhantomData)
     }
 }
 
