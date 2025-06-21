@@ -9,7 +9,7 @@ where
         Self: 'i,
         R: 'i;
 
-    fn compute<'i>(&self, reduction: &R, input: Self::In<'i>) -> R::Out
+    fn compute_reduce<'i>(&self, reduction: &R, input: Self::In<'i>) -> R::Out
     where
         R: 'i;
 }

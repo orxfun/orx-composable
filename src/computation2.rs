@@ -39,13 +39,13 @@ where
         Self: 'i,
         R: 'i;
 
-    fn compute<'i>(&self, reduction: &R, (in1, in2): Self::In<'i>) -> <R as Reduction>::Out
+    fn compute_reduce<'i>(&self, reduction: &R, (in1, in2): Self::In<'i>) -> <R as Reduction>::Out
     where
         R: 'i,
     {
         reduction.reduce(
-            self.c1.compute(reduction, in1),
-            self.c2.compute(reduction, in2),
+            self.c1.compute_reduce(reduction, in1),
+            self.c2.compute_reduce(reduction, in2),
         )
     }
 }
