@@ -1,5 +1,5 @@
 use crate::{
-    computation::Computation, computation0::Computation0, computation2::Computation2,
+    computation::Computation, computation0::Computation0, computation2::Computation2, input::Input,
     reduction::Reduction,
 };
 
@@ -38,5 +38,9 @@ where
             reduction: self.reduction,
             computation,
         }
+    }
+
+    pub fn input_builder(&self) -> Input<()> {
+        Input(())
     }
 }

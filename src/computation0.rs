@@ -7,9 +7,16 @@ impl<R> Computation<R> for Computation0
 where
     R: Reduction,
 {
-    type In = ();
+    type In<'i>
+        = ()
+    where
+        Self: 'i,
+        R: 'i;
 
-    fn compute(&self, reduction: &R, _: Self::In) -> <R as Reduction>::Out {
+    fn compute<'i>(&self, reduction: &R, _: Self::In<'i>) -> <R as Reduction>::Out
+    where
+        R: 'i,
+    {
         reduction.identity()
     }
 }

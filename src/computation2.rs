@@ -33,9 +33,16 @@ where
     C1: Computation<R>,
     C2: Computation<R>,
 {
-    type In = (C1::In, C2::In);
+    type In<'i>
+        = (C1::In<'i>, C2::In<'i>)
+    where
+        Self: 'i,
+        R: 'i;
 
-    fn compute(&self, reduction: &R, (in1, in2): Self::In) -> <R as Reduction>::Out {
+    fn compute<'i>(&self, reduction: &R, (in1, in2): Self::In<'i>) -> <R as Reduction>::Out
+    where
+        R: 'i,
+    {
         reduction.reduce(
             self.c1.compute(reduction, in1),
             self.c2.compute(reduction, in2),
