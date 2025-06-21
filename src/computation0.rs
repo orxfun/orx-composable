@@ -1,4 +1,6 @@
 use crate::{computation::Computation, reduction::Reduction};
+
+#[derive(Default)]
 pub struct Computation0;
 
 impl<R> Computation<R> for Computation0
