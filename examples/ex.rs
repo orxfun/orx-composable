@@ -30,7 +30,7 @@ impl Computation<And> for HealthyStockLevels {
         Self: 'i,
         And: 'i;
 
-    fn compute_reduce<'i>(&self, _: &And, stock_levels: Self::In<'i>) -> <And as Reduction>::Out
+    fn compute<'i>(&self, stock_levels: Self::In<'i>) -> <And as Reduction>::Out
     where
         And: 'i,
     {
@@ -56,11 +56,7 @@ impl Computation<And> for NoBacklogs {
         Self: 'i,
         And: 'i;
 
-    fn compute_reduce<'i>(
-        &self,
-        _: &And,
-        total_backlogged_items: Self::In<'i>,
-    ) -> <And as Reduction>::Out
+    fn compute<'i>(&self, total_backlogged_items: Self::In<'i>) -> <And as Reduction>::Out
     where
         And: 'i,
     {
@@ -85,7 +81,7 @@ impl Computation<And> for NoDelayedOrders {
         Self: 'i,
         And: 'i;
 
-    fn compute_reduce<'i>(&self, _: &And, input: Self::In<'i>) -> <And as Reduction>::Out
+    fn compute<'i>(&self, input: Self::In<'i>) -> <And as Reduction>::Out
     where
         And: 'i,
     {

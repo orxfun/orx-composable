@@ -39,6 +39,13 @@ where
         Self: 'i,
         R: 'i;
 
+    fn compute<'i>(&self, input: Self::In<'i>) -> <R as Reduction>::Out
+    where
+        R: 'i,
+    {
+        todo!()
+    }
+
     fn compute_reduce<'i>(&self, reduction: &R, (in1, in2): Self::In<'i>) -> <R as Reduction>::Out
     where
         R: 'i,
