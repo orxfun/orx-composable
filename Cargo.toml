@@ -1,0 +1,11 @@
+[package]
+name = "orx-composable"
+version = "0.1.0"
+edition = "2024"
+publish = ["artifactory"]
+
+[dependencies]
+
+
+[dev-dependencies]
+derive-new = "0.7.0"
