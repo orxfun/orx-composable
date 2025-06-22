@@ -1,8 +1,6 @@
 use std::marker::PhantomData;
 
 pub trait TypeSequence: Default {
-    type ValueType;
-
     type ComposeWith<X>: TypeSequence;
 
     type SplitLeft: TypeSequence;
@@ -16,8 +14,6 @@ pub trait TypeSequenceEnd {}
 pub struct End;
 
 impl TypeSequence for End {
-    type ValueType = ();
-
     type ComposeWith<X> = One<X>;
 
     type SplitLeft = Self;
@@ -30,8 +26,6 @@ impl TypeSequenceEnd for End {}
 pub struct One<T>(PhantomData<T>);
 
 impl<T> TypeSequence for One<T> {
-    type ValueType = T;
-
     type ComposeWith<X> = Many<Self, One<X>>;
 
     type SplitLeft = Self;
@@ -55,8 +49,6 @@ where
     T: TypeSequence,
     U: TypeSequence,
 {
-    type ValueType = (T::ValueType, U::ValueType);
-
     type ComposeWith<X> = Many<T, U::ComposeWith<X>>;
 
     type SplitLeft = T;
