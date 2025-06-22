@@ -25,11 +25,7 @@ struct SufficientStockLevels {
 }
 
 impl Compute for SufficientStockLevels {
-    type In<'i>
-        = &'i [(String, u64)]
-    where
-        Self: 'i,
-        And: 'i;
+    type In<'i> = &'i [(String, u64)];
 
     type Out = bool;
 
@@ -49,17 +45,12 @@ struct BacklogAmount(u64);
 
 struct NoBacklogs;
 
-impl Computation<And> for NoBacklogs {
-    type In<'i>
-        = BacklogAmount
-    where
-        Self: 'i,
-        And: 'i;
+impl Compute for NoBacklogs {
+    type In<'i> = BacklogAmount;
 
-    fn compute<'i>(&self, total_backlogged_items: Self::In<'i>) -> <And as Reduce>::Out
-    where
-        And: 'i,
-    {
+    type Out = bool;
+
+    fn compute(&self, total_backlogged_items: Self::In<'_>) -> Self::Out {
         total_backlogged_items.0 == 0
     }
 }
@@ -75,17 +66,12 @@ struct OrderStatus {
 
 struct NoDelayedOrders;
 
-impl Computation<And> for NoDelayedOrders {
-    type In<'i>
-        = &'i [OrderStatus]
-    where
-        Self: 'i,
-        And: 'i;
+impl Compute for NoDelayedOrders {
+    type In<'i> = &'i [OrderStatus];
 
-    fn compute<'i>(&self, orders: Self::In<'i>) -> <And as Reduce>::Out
-    where
-        And: 'i,
-    {
+    type Out = bool;
+
+    fn compute(&self, orders: Self::In<'_>) -> Self::Out {
         orders
             .iter()
             .all(|o| o.expected_lead_time_days <= o.days_to_due_date)
@@ -123,7 +109,7 @@ fn main() {
         .compose(stock_levels.as_slice())
         .compose(backlog_amount)
         .compose(orders.as_slice());
-    let health_status = health_rules.compute(input);
+    let health_status = health_rules.compute(input.value());
     assert!(health_status);
 
     // this time get the health status with the new state
@@ -140,10 +126,10 @@ fn main() {
         .compose(stock_levels.as_slice())
         .compose(backlog_amount)
         .compose(orders.as_slice());
-    let health_status = health_rules.compute(input);
+    let health_status = health_rules.compute(input.value());
     assert!(!health_status);
 }
 
 // generic health check
 
-struct HealthCheck<C: Computation<And>>(Composable<And, C>);
+// struct HealthCheck<C: Computation<And>>(Composable<And, C>);

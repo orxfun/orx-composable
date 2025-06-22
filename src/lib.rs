@@ -13,4 +13,5 @@ mod reduce;
 
 pub use composable::Composable;
 pub use compute::Compute;
+pub use input_builder::InputBuilder;
 pub use reduce::Reduce;
