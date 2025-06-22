@@ -19,11 +19,6 @@ where
     type R = R;
 
     type Composed<C>
-        = ComputeReduce2<R, C1, C>
-    where
-        C: ComputeReduce<R = Self::R>;
-
-    type Composed2<C>
         = ComputeReduce2<R, C1, ComputeWithReduction<R, C>>
     where
         C: Compute<Out = <Self::R as Reduce>::Unit>;
@@ -37,13 +32,6 @@ where
     }
 
     fn compose<C>(self, other: C) -> Self::Composed<C>
-    where
-        C: ComputeReduce<R = Self::R>,
-    {
-        ComputeReduce2(PhantomData, self.1, other)
-    }
-
-    fn compose2<C>(self, other: C) -> Self::Composed2<C>
     where
         C: Compute<Out = <Self::R as Reduce>::Unit>,
     {
