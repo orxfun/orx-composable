@@ -17,8 +17,5 @@ pub trait ComputeReduce: Sized {
 
     fn compose<C>(self, other: C) -> Self::Composed<C>
     where
-        C: ComputeReduce<R = Self::R>,
-    {
-        todo!()
-    }
+        C: ComputeReduce<R = Self::R>;
 }
