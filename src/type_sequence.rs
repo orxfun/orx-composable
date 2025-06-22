@@ -66,113 +66,10 @@ where
     }
 }
 
-pub trait InputBuilder: Sized {
-    type Left;
-
-    type Right: TypeSequence;
-
-    type X;
-
-    type ComposedWith<I>: InputBuilder;
-
-    fn compose(self, value: Self::Left) -> Self::ComposedWith<Self::Left> {
-        todo!()
-    }
-
-    fn value(self) -> Self::X;
-}
-
-pub struct InputBuilder0<Left, Right>(PhantomData<(Left, Right)>)
-where
-    Right: TypeSequence;
-
-impl<Left, Right> InputBuilder for InputBuilder0<Left, Right>
-where
-    Right: TypeSequence,
-{
-    type Left = Left;
-
-    type Right = Right;
-
-    type X = ();
-
-    type ComposedWith<I> = InputBuilder1<
-        <Self::Right as TypeSequence>::SplitLeft,
-        <Self::Right as TypeSequence>::SplitRight,
-        I,
-    >;
-
-    fn compose(self, value: Self::Left) -> Self::ComposedWith<Self::Left> {
-        InputBuilder1(PhantomData, value)
-    }
-
-    fn value(self) -> Self::X {
-        ()
-    }
-}
-
-pub struct InputBuilder1<Left, Right, X>(PhantomData<(Left, Right)>, X)
-where
-    Right: TypeSequence;
-
-impl<Left, Right, X> InputBuilder for InputBuilder1<Left, Right, X>
-where
-    Right: TypeSequence,
-{
-    type Left = Left;
-
-    type Right = Right;
-
-    type X = X;
-
-    type ComposedWith<I> = InputBuilder2<
-        <Self::Right as TypeSequence>::SplitLeft,
-        <Self::Right as TypeSequence>::SplitRight,
-        Self::X,
-        I,
-    >;
-
-    fn compose(self, value: Self::Left) -> Self::ComposedWith<Self::Left> {
-        InputBuilder2(PhantomData, self.1, value)
-    }
-
-    fn value(self) -> Self::X {
-        self.1
-    }
-}
-
-pub struct InputBuilder2<Left, Right, X1, X2>(PhantomData<(Left, Right)>, X1, X2)
-where
-    Right: TypeSequence;
-
-impl<Left, Right, X1, X2> InputBuilder for InputBuilder2<Left, Right, X1, X2>
-where
-    Right: TypeSequence,
-{
-    type Left = Left;
-
-    type Right = Right;
-
-    type X = (X1, X2);
-
-    type ComposedWith<I> = InputBuilder2<
-        <Self::Right as TypeSequence>::SplitLeft,
-        <Self::Right as TypeSequence>::SplitRight,
-        Self::X,
-        I,
-    >;
-
-    fn compose(self, value: Self::Left) -> Self::ComposedWith<Self::Left> {
-        InputBuilder2(PhantomData, (self.1, self.2), value)
-    }
-
-    fn value(self) -> Self::X {
-        (self.1, self.2)
-    }
-}
-
 #[cfg(test)]
 mod tests {
+    use crate::input_builder::{InputBuilder, InputBuilder0};
+
     use super::*;
 
     #[test]
@@ -189,7 +86,7 @@ mod tests {
         type Left = <TypeSeq as TypeSequence>::SplitLeft;
         type Right = <TypeSeq as TypeSequence>::SplitRight;
 
-        let builder_x = InputBuilder0::<Left, Right>(PhantomData);
+        let builder_x = InputBuilder0::<Left, Right>::default();
         let builder_y = builder_x.compose(42);
         let builder_z = builder_y.compose('x');
         let builder_w = builder_z.compose(true);
@@ -197,7 +94,7 @@ mod tests {
         let result = builder_t.value();
         dbg!(result);
 
-        assert_eq!(12, 33);
+        // assert_eq!(12, 33);
     }
 
     fn compose_with<S, Y>(_: S) -> <S as TypeSequence>::ComposeWith<Y>
