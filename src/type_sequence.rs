@@ -1,42 +1,70 @@
 use std::marker::PhantomData;
 
+use crate::Compute;
+
 pub enum Never {}
 
-pub trait TypeSequence: Default {
-    type ComposeWith<X>: TypeSequence;
+impl Compute for Never {
+    type In<'i> = ();
 
-    type SplitLeft;
+    type Out = ();
 
-    type SplitRight: TypeSequence;
+    fn compute(&self, _: Self::In<'_>) -> Self::Out {
+        unreachable!()
+    }
 }
 
 pub trait TypeSequenceEnd {}
+
+impl TypeSequenceEnd for Never {}
+
+pub trait TypeSequence: Default {
+    type ComposeWith<X>: TypeSequence
+    where
+        X: Compute;
+
+    type SplitLeft: Compute;
+
+    type SplitRight: TypeSequence;
+}
 
 #[derive(Default)]
 pub struct End;
 
 impl TypeSequence for End {
-    type ComposeWith<X> = One<X>;
+    type ComposeWith<X>
+        = One<X>
+    where
+        X: Compute;
 
     type SplitLeft = Never;
 
     type SplitRight = Self;
 }
 
-impl TypeSequenceEnd for End {}
-
 #[derive(Debug)]
-pub struct One<T>(PhantomData<T>);
+pub struct One<T>(PhantomData<T>)
+where
+    T: Compute;
 
-impl<T> TypeSequence for One<T> {
-    type ComposeWith<X> = Many<T, One<X>>;
+impl<T> TypeSequence for One<T>
+where
+    T: Compute,
+{
+    type ComposeWith<X>
+        = Many<T, One<X>>
+    where
+        X: Compute;
 
     type SplitLeft = T;
 
     type SplitRight = End;
 }
 
-impl<T> Default for One<T> {
+impl<T> Default for One<T>
+where
+    T: Compute,
+{
     fn default() -> Self {
         Self(Default::default())
     }
@@ -44,13 +72,18 @@ impl<T> Default for One<T> {
 
 pub struct Many<L, R>(PhantomData<(L, R)>)
 where
+    L: Compute,
     R: TypeSequence;
 
 impl<L, R> TypeSequence for Many<L, R>
 where
+    L: Compute,
     R: TypeSequence,
 {
-    type ComposeWith<X> = Many<L, R::ComposeWith<X>>;
+    type ComposeWith<X>
+        = Many<L, R::ComposeWith<X>>
+    where
+        X: Compute;
 
     type SplitLeft = L;
 
@@ -59,6 +92,7 @@ where
 
 impl<L, R> Default for Many<L, R>
 where
+    L: Compute,
     R: TypeSequence,
 {
     fn default() -> Self {
@@ -66,41 +100,79 @@ where
     }
 }
 
-#[cfg(test)]
-mod tests {
-    use crate::input_builder::{InputBuilder, InputBuilder0};
+// #[cfg(test)]
+// mod tests {
+//     use crate::input_builder_generic::{InputBuilder0, InputBuilderGeneric};
 
-    use super::*;
+//     use super::*;
 
-    #[test]
-    fn abc() {
-        let x = End;
-        let y = compose_with::<_, u32>(x);
-        let z = compose_with::<_, char>(y);
-        let w = compose_with::<_, bool>(z);
-        let t = compose_with::<_, String>(w);
+//     #[test]
+//     fn abc() {
+//         impl Compute for u32 {
+//             type In<'i> = u32;
 
-        type X = Many<One<u32>, Many<One<char>, Many<One<bool>, One<String>>>>;
+//             type Out = bool;
 
-        type TypeSeq = Many<u32, Many<char, Many<bool, One<String>>>>;
-        type Left = <TypeSeq as TypeSequence>::SplitLeft;
-        type Right = <TypeSeq as TypeSequence>::SplitRight;
+//             fn compute(&self, input: Self::In<'_>) -> Self::Out {
+//                 todo!()
+//             }
+//         }
+//         impl Compute for char {
+//             type In<'i> = char;
 
-        let builder_x = InputBuilder0::<Left, Right>::default();
-        let builder_y = builder_x.compose(42);
-        let builder_z = builder_y.compose('x');
-        let builder_w = builder_z.compose(true);
-        let builder_t = builder_w.compose(String::from("abc"));
-        let result = builder_t.value();
-        dbg!(result);
+//             type Out = bool;
 
-        // assert_eq!(12, 33);
-    }
+//             fn compute(&self, input: Self::In<'_>) -> Self::Out {
+//                 todo!()
+//             }
+//         }
+//         impl Compute for bool {
+//             type In<'i> = bool;
 
-    fn compose_with<S, Y>(_: S) -> <S as TypeSequence>::ComposeWith<Y>
-    where
-        S: TypeSequence,
-    {
-        Default::default()
-    }
-}
+//             type Out = bool;
+
+//             fn compute(&self, input: Self::In<'_>) -> Self::Out {
+//                 todo!()
+//             }
+//         }
+//         impl Compute for String {
+//             type In<'i> = String;
+
+//             type Out = bool;
+
+//             fn compute(&self, input: Self::In<'_>) -> Self::Out {
+//                 todo!()
+//             }
+//         }
+
+//         let x = End;
+//         let y = compose_with::<_, u32>(x);
+//         let z = compose_with::<_, char>(y);
+//         let w = compose_with::<_, bool>(z);
+//         let t = compose_with::<_, String>(w);
+
+//         type X = Many<One<u32>, Many<One<char>, Many<One<bool>, One<String>>>>;
+
+//         type TypeSeq = Many<u32, Many<char, Many<bool, One<String>>>>;
+//         type Left = <TypeSeq as TypeSequence>::SplitLeft;
+//         type Right = <TypeSeq as TypeSequence>::SplitRight;
+
+//         let builder_x = InputBuilder0::<Left, Right>::default();
+//         let builder_y = builder_x.compose(42);
+//         let builder_z = builder_y.compose('x');
+//         let builder_w = builder_z.compose(true);
+//         let builder_t = builder_w.compose(String::from("abc"));
+//         let result = builder_t.value();
+//         dbg!(result);
+
+//         // assert_eq!(12, 33);
+//     }
+
+//     fn compose_with<S, Y>(_: S) -> <S as TypeSequence>::ComposeWith<Y>
+//     where
+//         Y: Compute,
+//         S: TypeSequence,
+//     {
+//         Default::default()
+//     }
+// }

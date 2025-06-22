@@ -1,5 +1,11 @@
-use orx_composable::*;
-use std::collections::HashMap;
+use orx_composable::{
+    compute_reduce::ComputeReduce,
+    compute_reduce2::ComputeReduce2,
+    compute_with_reduction::ComputeWithReduction,
+    type_sequence::{Many, One},
+    *,
+};
+use std::{any::type_name, collections::HashMap};
 
 // reduction
 
@@ -94,6 +100,23 @@ fn main() {
         .compose(sufficient_stock_levels)
         .compose(no_backlogs)
         .compose(no_delayed_orders);
+
+    type C = ComputeReduce2<
+        And,
+        ComputeReduce2<
+            And,
+            ComputeWithReduction<And, SufficientStockLevels>,
+            ComputeWithReduction<And, NoBacklogs>,
+            Many<SufficientStockLevels, One<NoBacklogs>>,
+        >,
+        ComputeWithReduction<And, NoDelayedOrders>,
+        Many<SufficientStockLevels, Many<NoBacklogs, One<NoDelayedOrders>>>,
+    >;
+
+    type X<'i> = <C as ComputeReduce>::ComputeSequence;
+    // type Y = usize;
+
+    println!("{:?}", type_name::<X>());
 
     // use the defined health rules to get the health status with current state or inputs
 

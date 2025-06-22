@@ -1,29 +1,40 @@
 use crate::{
-    compute::Compute, compute_reduce::ComputeReduce, compute_with_reduction::ComputeWithReduction,
+    compute::Compute,
+    compute_reduce::ComputeReduce,
+    compute_with_reduction::ComputeWithReduction,
     reduce::Reduce,
+    type_sequence::{End, TypeSequence},
 };
 use std::marker::PhantomData;
 
-pub struct ComputeReduce2<R, C1, C2>(pub(super) PhantomData<R>, pub(super) C1, pub(super) C2)
-where
-    R: Reduce,
-    C1: ComputeReduce<R = R>,
-    C2: ComputeReduce<R = R>;
-
-impl<R, C1, C2> ComputeReduce for ComputeReduce2<R, C1, C2>
+pub struct ComputeReduce2<R, C1, C2, S>(
+    pub(super) PhantomData<(R, S)>,
+    pub(super) C1,
+    pub(super) C2,
+)
 where
     R: Reduce,
     C1: ComputeReduce<R = R>,
     C2: ComputeReduce<R = R>,
+    S: TypeSequence;
+
+impl<R, C1, C2, S> ComputeReduce for ComputeReduce2<R, C1, C2, S>
+where
+    R: Reduce,
+    C1: ComputeReduce<R = R>,
+    C2: ComputeReduce<R = R>,
+    S: TypeSequence,
 {
     type In<'i> = (C1::In<'i>, C2::In<'i>);
 
     type R = R;
 
     type Composed<C>
-        = ComputeReduce2<R, Self, ComputeWithReduction<R, C>>
+        = ComputeReduce2<R, Self, ComputeWithReduction<R, C>, S::ComposeWith<C>>
     where
         C: Compute<Out = <Self::R as Reduce>::Unit>;
+
+    type ComputeSequence = S;
 
     fn compute_reduce<'i>(
         &self,

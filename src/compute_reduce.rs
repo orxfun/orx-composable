@@ -1,4 +1,4 @@
-use crate::{compute::Compute, reduce::Reduce};
+use crate::{compute::Compute, reduce::Reduce, type_sequence::TypeSequence};
 
 pub trait ComputeReduce: Sized {
     type In<'i>;
@@ -8,6 +8,8 @@ pub trait ComputeReduce: Sized {
     type Composed<C>: ComputeReduce<R = Self::R>
     where
         C: Compute<Out = <Self::R as Reduce>::Unit>;
+
+    type ComputeSequence: TypeSequence;
 
     fn compute_reduce<'i>(
         &self,

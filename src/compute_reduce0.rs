@@ -1,6 +1,6 @@
 use crate::{
     compute::Compute, compute_reduce::ComputeReduce, compute_reduce1::ComputeReduce1,
-    compute_with_reduction::ComputeWithReduction, reduce::Reduce,
+    compute_with_reduction::ComputeWithReduction, reduce::Reduce, type_sequence::End,
 };
 use std::marker::PhantomData;
 
@@ -17,9 +17,11 @@ where
     type R = R;
 
     type Composed<C>
-        = ComputeReduce1<R, ComputeWithReduction<R, C>>
+        = ComputeReduce1<R, ComputeWithReduction<R, C>, C>
     where
         C: Compute<Out = <Self::R as Reduce>::Unit>;
+
+    type ComputeSequence = End;
 
     fn compute_reduce<'i>(&self, reduce: &Self::R, _: Self::In<'i>) -> <Self::R as Reduce>::Unit {
         reduce.identity()
@@ -29,6 +31,6 @@ where
     where
         C: Compute<Out = <Self::R as Reduce>::Unit>,
     {
-        ComputeReduce1(PhantomData, ComputeWithReduction(PhantomData, other))
+        ComputeReduce1::<R, _, C>(PhantomData, ComputeWithReduction(PhantomData, other))
     }
 }
