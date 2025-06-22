@@ -2,6 +2,10 @@ use std::marker::PhantomData;
 
 pub trait TypeSequence: Default {
     type ComposeWith<X>: TypeSequence;
+
+    type SplitLeft;
+
+    type SplitRight: TypeSequence;
 }
 
 #[derive(Default)]
@@ -9,12 +13,20 @@ pub struct End;
 
 impl TypeSequence for End {
     type ComposeWith<X> = One<X>;
+
+    type SplitLeft = Self;
+
+    type SplitRight = Self;
 }
 
 pub struct One<T>(PhantomData<T>);
 
 impl<T> TypeSequence for One<T> {
     type ComposeWith<X> = Many<Self, One<X>>;
+
+    type SplitLeft = T;
+
+    type SplitRight = End;
 }
 
 impl<T> Default for One<T> {
@@ -32,6 +44,10 @@ where
     U: TypeSequence,
 {
     type ComposeWith<X> = Many<T, U::ComposeWith<X>>;
+
+    type SplitLeft = T;
+
+    type SplitRight = U;
 }
 
 impl<T, U> Default for Many<T, U>
