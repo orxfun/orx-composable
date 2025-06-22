@@ -92,7 +92,7 @@ pub trait InputBuilder: Sized {
 
     type ComposedWith<I>: InputBuilder;
 
-    fn add(self, value: Self::Left) -> Self::ComposedWith<Self::Left> {
+    fn compose(self, value: Self::Left) -> Self::ComposedWith<Self::Left> {
         todo!()
     }
 
@@ -119,7 +119,7 @@ where
         I,
     >;
 
-    fn add(self, value: Self::Left) -> Self::ComposedWith<Self::Left> {
+    fn compose(self, value: Self::Left) -> Self::ComposedWith<Self::Left> {
         InputBuilder1(PhantomData, value)
     }
 
@@ -149,6 +149,10 @@ where
         I,
     >;
 
+    fn compose(self, value: Self::Left) -> Self::ComposedWith<Self::Left> {
+        InputBuilder2(PhantomData, self.1, value)
+    }
+
     fn value(self) -> Self::X {
         self.1
     }
@@ -174,6 +178,10 @@ where
         Self::X,
         I,
     >;
+
+    fn compose(self, value: Self::Left) -> Self::ComposedWith<Self::Left> {
+        InputBuilder2(PhantomData, (self.1, self.2), value)
+    }
 
     fn value(self) -> Self::X {
         (self.1, self.2)
