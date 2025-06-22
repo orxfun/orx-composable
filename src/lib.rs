@@ -1,3 +1,4 @@
+mod composable;
 mod compute;
 mod compute_reduce;
 mod compute_reduce0;
