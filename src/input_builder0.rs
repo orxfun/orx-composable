@@ -7,9 +7,7 @@ impl InputBuilder for InputBuilder0 {
 
     type Composed<In> = InputBuilder1<In>;
 
-    fn value(self) -> Self::In {
-        ()
-    }
+    fn value(self) -> Self::In {}
 
     fn compose<In2>(self, other: In2) -> Self::Composed<In2> {
         InputBuilder1(other)
