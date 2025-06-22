@@ -5,7 +5,7 @@ pub trait ComputeReduce: Sized {
 
     type R: Reduce;
 
-    type Composed<C>
+    type Composed<C>: ComputeReduce<R = Self::R>
     where
         C: Compute<Out = <Self::R as Reduce>::Unit>;
 
