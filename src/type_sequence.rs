@@ -92,14 +92,9 @@ pub trait InputBuilder: Sized {
 
     type ComposedWith<I>: InputBuilder;
 
-    // fn add(
-    //     self,
-    //     value: Self::Left,
-    // ) -> impl InputBuilder<
-    //     Left = <Self::Right as TypeSequence>::SplitLeft,
-    //     Right = <Self::Right as TypeSequence>::SplitRight,
-    //     In = (Self::In, Self::Left),
-    // >;
+    fn add(self, value: Self::Left) -> Self::ComposedWith<Self::Left> {
+        todo!()
+    }
 
     fn value(self) -> Self::X;
 }
@@ -118,18 +113,15 @@ where
 
     type X = ();
 
-    type ComposedWith<I> = Self;
+    type ComposedWith<I> = InputBuilder1<
+        <Self::Right as TypeSequence>::SplitLeft,
+        <Self::Right as TypeSequence>::SplitRight,
+        I,
+    >;
 
-    // fn add(
-    //     self,
-    //     value: Self::Left,
-    // ) -> impl InputBuilder<
-    //     Left = <Self::Right as TypeSequence>::SplitLeft,
-    //     Right = <Self::Right as TypeSequence>::SplitRight,
-    //     In = (Self::In, Self::Left),
-    // > {
-    //     self
-    // }
+    fn add(self, value: Self::Left) -> Self::ComposedWith<Self::Left> {
+        InputBuilder1(PhantomData, value)
+    }
 
     fn value(self) -> Self::X {
         ()
@@ -150,7 +142,12 @@ where
 
     type X = X;
 
-    type ComposedWith<I> = Self;
+    type ComposedWith<I> = InputBuilder2<
+        <Self::Right as TypeSequence>::SplitLeft,
+        <Self::Right as TypeSequence>::SplitRight,
+        Self::X,
+        I,
+    >;
 
     fn value(self) -> Self::X {
         self.1
@@ -159,23 +156,26 @@ where
 
 pub struct InputBuilder2<Left, Right, X1, X2>(PhantomData<(Left, Right)>, X1, X2)
 where
-    Right: TypeSequence,
-    X2: InputBuilder;
+    Right: TypeSequence;
 
 impl<Left, Right, X1, X2> InputBuilder for InputBuilder2<Left, Right, X1, X2>
 where
     Right: TypeSequence,
-    X2: InputBuilder,
 {
     type Left = Left;
 
     type Right = Right;
 
-    type X = (X1, <X2 as InputBuilder>::X);
+    type X = (X1, X2);
 
-    type ComposedWith<I> = Self;
+    type ComposedWith<I> = InputBuilder2<
+        <Self::Right as TypeSequence>::SplitLeft,
+        <Self::Right as TypeSequence>::SplitRight,
+        Self::X,
+        I,
+    >;
 
     fn value(self) -> Self::X {
-        (self.1, self.2.value())
+        (self.1, self.2)
     }
 }
