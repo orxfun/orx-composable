@@ -1,50 +1,50 @@
 use crate::{
-    computation::Computation, computation0::Computation0, computation2::Computation2, input::Input,
-    reduction::Reduction,
+    compute::Compute, compute_reduce::ComputeReduce, compute_reduce0::ComputeReduce0,
+    input_builder0::InputBuilder0, reduce::Reduce,
 };
+use std::marker::PhantomData;
 
-pub struct Composable<R, C>
+pub struct Composable<R, C>(R, C)
 where
-    R: Reduction,
-    C: Computation<R>,
-{
-    reduction: R,
-    computation: C,
-}
+    R: Reduce,
+    C: ComputeReduce<R = R>;
 
-impl<R> Composable<R, Computation0>
+impl<R> Composable<R, ComputeReduce0<R>>
 where
-    R: Reduction,
+    R: Reduce,
 {
-    pub fn new(reduction: R) -> Self {
-        Self {
-            reduction,
-            computation: Default::default(),
-        }
+    pub fn new(reduce: R) -> Self {
+        Self(reduce, ComputeReduce0(PhantomData))
     }
 }
 
 impl<R, C> Composable<R, C>
 where
-    R: Reduction,
-    C: Computation<R>,
+    R: Reduce,
+    C: ComputeReduce<R = R>,
 {
-    pub fn compose<D>(self, other: D) -> Composable<R, Computation2<R, C, D>>
+    pub fn compose<C2>(self, other: C2) -> Composable<R, C::Composed<C2>>
     where
-        D: Computation<R>,
+        C2: Compute<Out = R::Unit>,
     {
-        let computation = Computation2::new(self.computation, other);
-        Composable {
-            reduction: self.reduction,
-            computation,
-        }
+        Composable(self.0, self.1.compose(other))
     }
 
-    pub fn input_builder(&self) -> Input<()> {
-        Input(())
+    pub fn input_builder(&self) -> InputBuilder0 {
+        InputBuilder0
     }
+}
 
-    pub fn compute<'i>(&self, input: Input<C::In<'i>>) -> R::Out {
-        self.computation.compute(input.0)
+impl<R, C> Compute for Composable<R, C>
+where
+    R: Reduce,
+    C: ComputeReduce<R = R>,
+{
+    type In<'i> = C::In<'i>;
+
+    type Out = R::Unit;
+
+    fn compute(&self, input: Self::In<'_>) -> Self::Out {
+        self.1.compute_reduce(&self.0, input)
     }
 }

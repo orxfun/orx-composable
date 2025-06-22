@@ -6,14 +6,14 @@ use std::collections::HashMap;
 #[derive(Default)]
 struct And;
 
-impl Reduction for And {
-    type Out = bool;
+impl Reduce for And {
+    type Unit = bool;
 
-    fn identity(&self) -> Self::Out {
+    fn identity(&self) -> Self::Unit {
         true
     }
 
-    fn reduce(&self, a: Self::Out, b: Self::Out) -> Self::Out {
+    fn reduce(&self, a: Self::Unit, b: Self::Unit) -> Self::Unit {
         a && b
     }
 }
@@ -24,17 +24,12 @@ struct SufficientStockLevels {
     required_minimum_per_sku: HashMap<String, u64>,
 }
 
-impl Computation<And> for SufficientStockLevels {
-    type In<'i>
-        = &'i [(String, u64)]
-    where
-        Self: 'i,
-        And: 'i;
+impl Compute for SufficientStockLevels {
+    type In<'i> = &'i [(String, u64)];
 
-    fn compute<'i>(&self, stock_levels: Self::In<'i>) -> <And as Reduction>::Out
-    where
-        And: 'i,
-    {
+    type Out = bool;
+
+    fn compute(&self, stock_levels: Self::In<'_>) -> Self::Out {
         stock_levels.iter().all(|(sku, current)| {
             self.required_minimum_per_sku
                 .get(sku)
@@ -50,17 +45,12 @@ struct BacklogAmount(u64);
 
 struct NoBacklogs;
 
-impl Computation<And> for NoBacklogs {
-    type In<'i>
-        = BacklogAmount
-    where
-        Self: 'i,
-        And: 'i;
+impl Compute for NoBacklogs {
+    type In<'i> = BacklogAmount;
 
-    fn compute<'i>(&self, total_backlogged_items: Self::In<'i>) -> <And as Reduction>::Out
-    where
-        And: 'i,
-    {
+    type Out = bool;
+
+    fn compute(&self, total_backlogged_items: Self::In<'_>) -> Self::Out {
         total_backlogged_items.0 == 0
     }
 }
@@ -76,17 +66,12 @@ struct OrderStatus {
 
 struct NoDelayedOrders;
 
-impl Computation<And> for NoDelayedOrders {
-    type In<'i>
-        = &'i [OrderStatus]
-    where
-        Self: 'i,
-        And: 'i;
+impl Compute for NoDelayedOrders {
+    type In<'i> = &'i [OrderStatus];
 
-    fn compute<'i>(&self, orders: Self::In<'i>) -> <And as Reduction>::Out
-    where
-        And: 'i,
-    {
+    type Out = bool;
+
+    fn compute(&self, orders: Self::In<'_>) -> Self::Out {
         orders
             .iter()
             .all(|o| o.expected_lead_time_days <= o.days_to_due_date)
@@ -124,7 +109,7 @@ fn main() {
         .compose(stock_levels.as_slice())
         .compose(backlog_amount)
         .compose(orders.as_slice());
-    let health_status = health_rules.compute(input);
+    let health_status = health_rules.compute(input.value());
     assert!(health_status);
 
     // this time get the health status with the new state
@@ -141,10 +126,10 @@ fn main() {
         .compose(stock_levels.as_slice())
         .compose(backlog_amount)
         .compose(orders.as_slice());
-    let health_status = health_rules.compute(input);
+    let health_status = health_rules.compute(input.value());
     assert!(!health_status);
 }
 
 // generic health check
 
-struct HealthCheck<C: Computation<And>>(Composable<And, C>);
+// struct HealthCheck<C: Computation<And>>(Composable<And, C>);
