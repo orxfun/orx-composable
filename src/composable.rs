@@ -23,12 +23,12 @@ where
     R: Reduce,
     C: ComputeReduce<R = R>,
 {
-    // pub fn compose<C2>(self, other: C2) -> Composable<R, C::Composed<C2>>
-    // where
-    //     C2: Compute<Out = R::Unit>,
-    // {
-    //     todo!()
-    // }
+    pub fn compose<C2>(self, other: C2) -> Composable<R, C::Composed<C2>>
+    where
+        C2: Compute<Out = R::Unit>,
+    {
+        Composable(self.0, self.1.compose(other))
+    }
 }
 
 impl<R, C> Compute for Composable<R, C>
