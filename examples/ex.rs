@@ -6,14 +6,14 @@ use std::collections::HashMap;
 #[derive(Default)]
 struct And;
 
-impl Reduction for And {
-    type Out = bool;
+impl Reduce for And {
+    type Unit = bool;
 
-    fn identity(&self) -> Self::Out {
+    fn identity(&self) -> Self::Unit {
         true
     }
 
-    fn reduce(&self, a: Self::Out, b: Self::Out) -> Self::Out {
+    fn reduce(&self, a: Self::Unit, b: Self::Unit) -> Self::Unit {
         a && b
     }
 }
@@ -24,17 +24,16 @@ struct SufficientStockLevels {
     required_minimum_per_sku: HashMap<String, u64>,
 }
 
-impl Computation<And> for SufficientStockLevels {
+impl Compute for SufficientStockLevels {
     type In<'i>
         = &'i [(String, u64)]
     where
         Self: 'i,
         And: 'i;
 
-    fn compute<'i>(&self, stock_levels: Self::In<'i>) -> <And as Reduction>::Out
-    where
-        And: 'i,
-    {
+    type Out = bool;
+
+    fn compute(&self, stock_levels: Self::In<'_>) -> Self::Out {
         stock_levels.iter().all(|(sku, current)| {
             self.required_minimum_per_sku
                 .get(sku)
@@ -57,7 +56,7 @@ impl Computation<And> for NoBacklogs {
         Self: 'i,
         And: 'i;
 
-    fn compute<'i>(&self, total_backlogged_items: Self::In<'i>) -> <And as Reduction>::Out
+    fn compute<'i>(&self, total_backlogged_items: Self::In<'i>) -> <And as Reduce>::Out
     where
         And: 'i,
     {
@@ -83,7 +82,7 @@ impl Computation<And> for NoDelayedOrders {
         Self: 'i,
         And: 'i;
 
-    fn compute<'i>(&self, orders: Self::In<'i>) -> <And as Reduction>::Out
+    fn compute<'i>(&self, orders: Self::In<'i>) -> <And as Reduce>::Out
     where
         And: 'i,
     {
