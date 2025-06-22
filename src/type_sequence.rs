@@ -8,6 +8,8 @@ pub trait TypeSequence: Default {
     type SplitRight: TypeSequence;
 }
 
+pub trait TypeSequenceEnd {}
+
 #[derive(Default)]
 pub struct End;
 
@@ -18,6 +20,8 @@ impl TypeSequence for End {
 
     type SplitRight = Self;
 }
+
+impl TypeSequenceEnd for End {}
 
 pub struct One<T>(PhantomData<T>);
 
@@ -84,18 +88,94 @@ pub trait InputBuilder: Sized {
 
     type Right: TypeSequence;
 
-    type In;
+    type X;
 
-    fn add(
-        self,
-        value: Self::Left,
-    ) -> impl InputBuilder<
-        Left = <Self::Right as TypeSequence>::SplitLeft,
-        Right = <Self::Right as TypeSequence>::SplitRight,
-        In = (Self::In, Self::Left),
-    >;
+    type ComposedWith<I>: InputBuilder;
 
-    fn value(self) -> Self::In
-    where
-        Self: InputBuilder<Left = End>;
+    // fn add(
+    //     self,
+    //     value: Self::Left,
+    // ) -> impl InputBuilder<
+    //     Left = <Self::Right as TypeSequence>::SplitLeft,
+    //     Right = <Self::Right as TypeSequence>::SplitRight,
+    //     In = (Self::In, Self::Left),
+    // >;
+
+    fn value(self) -> Self::X;
+}
+
+pub struct InputBuilder0<Left, Right>(PhantomData<(Left, Right)>)
+where
+    Right: TypeSequence;
+
+impl<Left, Right> InputBuilder for InputBuilder0<Left, Right>
+where
+    Right: TypeSequence,
+{
+    type Left = Left;
+
+    type Right = Right;
+
+    type X = ();
+
+    type ComposedWith<I> = Self;
+
+    // fn add(
+    //     self,
+    //     value: Self::Left,
+    // ) -> impl InputBuilder<
+    //     Left = <Self::Right as TypeSequence>::SplitLeft,
+    //     Right = <Self::Right as TypeSequence>::SplitRight,
+    //     In = (Self::In, Self::Left),
+    // > {
+    //     self
+    // }
+
+    fn value(self) -> Self::X {
+        ()
+    }
+}
+
+pub struct InputBuilder1<Left, Right, X>(PhantomData<(Left, Right)>, X)
+where
+    Right: TypeSequence;
+
+impl<Left, Right, X> InputBuilder for InputBuilder1<Left, Right, X>
+where
+    Right: TypeSequence,
+{
+    type Left = Left;
+
+    type Right = Right;
+
+    type X = X;
+
+    type ComposedWith<I> = Self;
+
+    fn value(self) -> Self::X {
+        self.1
+    }
+}
+
+pub struct InputBuilder2<Left, Right, X1, X2>(PhantomData<(Left, Right)>, X1, X2)
+where
+    Right: TypeSequence,
+    X2: InputBuilder;
+
+impl<Left, Right, X1, X2> InputBuilder for InputBuilder2<Left, Right, X1, X2>
+where
+    Right: TypeSequence,
+    X2: InputBuilder,
+{
+    type Left = Left;
+
+    type Right = Right;
+
+    type X = (X1, <X2 as InputBuilder>::X);
+
+    type ComposedWith<I> = Self;
+
+    fn value(self) -> Self::X {
+        (self.1, self.2.value())
+    }
 }
