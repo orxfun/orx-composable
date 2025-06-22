@@ -1,5 +1,7 @@
 use std::marker::PhantomData;
 
+pub enum Never {}
+
 pub trait TypeSequence: Default {
     type ComposeWith<X>: TypeSequence;
 
@@ -16,7 +18,7 @@ pub struct End;
 impl TypeSequence for End {
     type ComposeWith<X> = One<X>;
 
-    type SplitLeft = Self;
+    type SplitLeft = Never;
 
     type SplitRight = Self;
 }
@@ -185,6 +187,8 @@ mod tests {
 
         let builder_x = InputBuilder0::<Left, Right>(PhantomData);
         // let builder_y = builder_x.compose(42);
+        // let builder_z = builder_y.compose('x');
+        // let builder_w = builder_z.compose(true);
     }
 
     fn compose_with<S, Y>(_: S) -> <S as TypeSequence>::ComposeWith<Y>
