@@ -1,9 +1,11 @@
 use std::marker::PhantomData;
 
 pub trait TypeSequence: Default {
+    type ValueType;
+
     type ComposeWith<X>: TypeSequence;
 
-    type SplitLeft;
+    type SplitLeft: TypeSequence;
 
     type SplitRight: TypeSequence;
 }
@@ -14,6 +16,8 @@ pub trait TypeSequenceEnd {}
 pub struct End;
 
 impl TypeSequence for End {
+    type ValueType = ();
+
     type ComposeWith<X> = One<X>;
 
     type SplitLeft = Self;
@@ -26,9 +30,11 @@ impl TypeSequenceEnd for End {}
 pub struct One<T>(PhantomData<T>);
 
 impl<T> TypeSequence for One<T> {
+    type ValueType = T;
+
     type ComposeWith<X> = Many<Self, One<X>>;
 
-    type SplitLeft = T;
+    type SplitLeft = Self;
 
     type SplitRight = End;
 }
@@ -41,12 +47,16 @@ impl<T> Default for One<T> {
 
 pub struct Many<T, U>(PhantomData<(T, U)>)
 where
+    T: TypeSequence,
     U: TypeSequence;
 
 impl<T, U> TypeSequence for Many<T, U>
 where
+    T: TypeSequence,
     U: TypeSequence,
 {
+    type ValueType = (T::ValueType, U::ValueType);
+
     type ComposeWith<X> = Many<T, U::ComposeWith<X>>;
 
     type SplitLeft = T;
@@ -56,30 +66,11 @@ where
 
 impl<T, U> Default for Many<T, U>
 where
+    T: TypeSequence,
     U: TypeSequence,
 {
     fn default() -> Self {
         Self(Default::default())
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn abc() {
-        let x = End;
-        let y = compose_with::<_, u32>(x);
-        let z = compose_with::<_, char>(y);
-        let w = compose_with::<_, bool>(z);
-    }
-
-    fn compose_with<S, Y>(_: S) -> <S as TypeSequence>::ComposeWith<Y>
-    where
-        S: TypeSequence,
-    {
-        Default::default()
     }
 }
 
@@ -185,5 +176,32 @@ where
 
     fn value(self) -> Self::X {
         (self.1, self.2)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn abc() {
+        let x = End;
+        let y = compose_with::<_, u32>(x);
+        let z = compose_with::<_, char>(y);
+        let w = compose_with::<_, bool>(z);
+
+        type TypeSeq = Many<One<u32>, Many<One<char>, One<bool>>>;
+        type Left = <TypeSeq as TypeSequence>::SplitLeft;
+        type Right = <TypeSeq as TypeSequence>::SplitRight;
+
+        let builder_x = InputBuilder0::<Left, Right>(PhantomData);
+        // let builder_y = builder_x.compose(42);
+    }
+
+    fn compose_with<S, Y>(_: S) -> <S as TypeSequence>::ComposeWith<Y>
+    where
+        S: TypeSequence,
+    {
+        Default::default()
     }
 }
