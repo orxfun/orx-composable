@@ -10,9 +10,7 @@ pub use computation::Computation;
 pub use input::Input;
 pub use reduction::Reduction;
 
-mod composed;
 mod compute;
-mod compute_reduce;
 mod reduce;
 
 // pub use compute::Compute;
