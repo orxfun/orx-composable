@@ -3,7 +3,7 @@ use std::marker::PhantomData;
 pub trait TypeSequence: Default {
     type ComposeWith<X>: TypeSequence;
 
-    type SplitLeft: TypeSequence;
+    type SplitLeft;
 
     type SplitRight: TypeSequence;
 }
@@ -41,12 +41,10 @@ impl<T> Default for One<T> {
 
 pub struct Many<T, U>(PhantomData<(T, U)>)
 where
-    T: TypeSequence,
     U: TypeSequence;
 
 impl<T, U> TypeSequence for Many<T, U>
 where
-    T: TypeSequence,
     U: TypeSequence,
 {
     type ComposeWith<X> = Many<T, U::ComposeWith<X>>;
@@ -58,7 +56,6 @@ where
 
 impl<T, U> Default for Many<T, U>
 where
-    T: TypeSequence,
     U: TypeSequence,
 {
     fn default() -> Self {
