@@ -4,7 +4,7 @@ use crate::{
 };
 use std::marker::PhantomData;
 
-pub struct ComputeWithReduction<R, C>(PhantomData<R>, C)
+pub struct ComputeWithReduction<R, C>(pub(super) PhantomData<R>, pub(super) C)
 where
     R: Reduce,
     C: Compute<Out = R::Unit>;
@@ -22,6 +22,11 @@ where
         = ComputeReduce2<R, Self, C2>
     where
         C2: ComputeReduce<R = Self::R>;
+
+    type Composed2<C2>
+        = ()
+    where
+        C2: Compute<Out = <Self::R as Reduce>::Unit>;
 
     fn compute_reduce<'i>(&self, _: &Self::R, input: Self::In<'i>) -> <Self::R as Reduce>::Unit {
         self.1.compute(input)
