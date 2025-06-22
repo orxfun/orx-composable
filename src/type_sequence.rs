@@ -25,12 +25,13 @@ impl TypeSequence for End {
 
 impl TypeSequenceEnd for End {}
 
+#[derive(Debug)]
 pub struct One<T>(PhantomData<T>);
 
 impl<T> TypeSequence for One<T> {
-    type ComposeWith<X> = Many<Self, One<X>>;
+    type ComposeWith<X> = Many<T, One<X>>;
 
-    type SplitLeft = Self;
+    type SplitLeft = T;
 
     type SplitRight = End;
 }
@@ -41,24 +42,24 @@ impl<T> Default for One<T> {
     }
 }
 
-pub struct Many<T, U>(PhantomData<(T, U)>)
+pub struct Many<L, R>(PhantomData<(L, R)>)
 where
-    U: TypeSequence;
+    R: TypeSequence;
 
-impl<T, U> TypeSequence for Many<T, U>
+impl<L, R> TypeSequence for Many<L, R>
 where
-    U: TypeSequence,
+    R: TypeSequence,
 {
-    type ComposeWith<X> = Many<T, U::ComposeWith<X>>;
+    type ComposeWith<X> = Many<L, R::ComposeWith<X>>;
 
-    type SplitLeft = T;
+    type SplitLeft = L;
 
-    type SplitRight = U;
+    type SplitRight = R;
 }
 
-impl<T, U> Default for Many<T, U>
+impl<L, R> Default for Many<L, R>
 where
-    U: TypeSequence,
+    R: TypeSequence,
 {
     fn default() -> Self {
         Self(Default::default())
@@ -180,15 +181,23 @@ mod tests {
         let y = compose_with::<_, u32>(x);
         let z = compose_with::<_, char>(y);
         let w = compose_with::<_, bool>(z);
+        let t = compose_with::<_, String>(w);
 
-        type TypeSeq = Many<One<u32>, Many<One<char>, One<bool>>>;
+        type X = Many<One<u32>, Many<One<char>, Many<One<bool>, One<String>>>>;
+
+        type TypeSeq = Many<u32, Many<char, Many<bool, One<String>>>>;
         type Left = <TypeSeq as TypeSequence>::SplitLeft;
         type Right = <TypeSeq as TypeSequence>::SplitRight;
 
         let builder_x = InputBuilder0::<Left, Right>(PhantomData);
-        // let builder_y = builder_x.compose(42);
-        // let builder_z = builder_y.compose('x');
-        // let builder_w = builder_z.compose(true);
+        let builder_y = builder_x.compose(42);
+        let builder_z = builder_y.compose('x');
+        let builder_w = builder_z.compose(true);
+        let builder_t = builder_w.compose(String::from("abc"));
+        let result = builder_t.value();
+        dbg!(result);
+
+        assert_eq!(12, 33);
     }
 
     fn compose_with<S, Y>(_: S) -> <S as TypeSequence>::ComposeWith<Y>
