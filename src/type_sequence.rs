@@ -78,3 +78,24 @@ mod tests {
         Default::default()
     }
 }
+
+pub trait InputBuilder: Sized {
+    type Left;
+
+    type Right: TypeSequence;
+
+    type In;
+
+    fn add(
+        self,
+        value: Self::Left,
+    ) -> impl InputBuilder<
+        Left = <Self::Right as TypeSequence>::SplitLeft,
+        Right = <Self::Right as TypeSequence>::SplitRight,
+        In = (Self::In, Self::Left),
+    >;
+
+    fn value(self) -> Self::In
+    where
+        Self: InputBuilder<Left = End>;
+}
