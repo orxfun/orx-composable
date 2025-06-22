@@ -1,6 +1,6 @@
 use crate::{
     compute::Compute, compute_reduce::ComputeReduce, compute_reduce0::ComputeReduce0,
-    input_builder::InputBuilder, reduce::Reduce,
+    input_builder0::InputBuilder0, reduce::Reduce,
 };
 use std::marker::PhantomData;
 
@@ -30,9 +30,9 @@ where
         Composable(self.0, self.1.compose(other))
     }
 
-    // pub fn input_builder(&self) -> InputBuilder<()> {
-    //     InputBuilder(())
-    // }
+    pub fn input_builder(&self) -> InputBuilder0 {
+        InputBuilder0
+    }
 }
 
 impl<R, C> Compute for Composable<R, C>
