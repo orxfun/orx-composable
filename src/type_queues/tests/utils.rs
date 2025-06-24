@@ -7,9 +7,16 @@ pub fn format(type_name: impl ToString) -> String {
         .replace("\n", &"")
         .replace(" ", &"")
         .trim()
-        .replace("orx_composable::type_sequences::empty::", "")
-        .replace("orx_composable::type_sequences::non_empty::", "")
+        .replace("orx_composable::type_queues::empty::", "")
+        .replace("orx_composable::type_queues::one::", "")
+        .replace("orx_composable::type_queues::multi::", "")
         .replace("alloc::string::", "")
+}
+
+pub fn assert_type<T>(t: &T, type_name: impl ToString) {
+    let a = format(type_name_of_val(t));
+    let b = format(type_name);
+    assert_eq!(a, b);
 }
 
 pub fn push<Q, T>(_: Q) -> <Q as TypeQueue>::Push<T>
