@@ -6,7 +6,7 @@ pub struct EmptyTypeSeq;
 impl TypeSeq for EmptyTypeSeq {
     type Left = Never;
 
-    type RightSeq = Self;
+    type Right = Self;
 
     type AddToLeft<T> = NonEmptyTypeSeq<T, Self>;
 

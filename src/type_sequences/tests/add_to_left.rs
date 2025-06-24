@@ -1,13 +1,6 @@
 use crate::type_sequences::{empty::EmptyTypeSeq, type_seq::TypeSeq};
 use std::any::type_name_of_val;
 
-fn compose<S, T>(_: S) -> <S as TypeSeq>::AddToLeft<T>
-where
-    S: TypeSeq,
-{
-    Default::default()
-}
-
 fn format(type_name: impl ToString) -> String {
     type_name
         .to_string()
@@ -17,6 +10,13 @@ fn format(type_name: impl ToString) -> String {
         .replace("orx_composable::type_sequences::empty::", "")
         .replace("orx_composable::type_sequences::non_empty::", "")
         .replace("alloc::string::", "")
+}
+
+fn compose<S, T>(_: S) -> <S as TypeSeq>::AddToLeft<T>
+where
+    S: TypeSeq,
+{
+    Default::default()
 }
 
 #[test]

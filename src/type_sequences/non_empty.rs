@@ -16,7 +16,7 @@ impl<L, R> Default for NonEmptyTypeSeq<L, R> {
 impl<L, R> TypeSeq for NonEmptyTypeSeq<L, R> {
     type Left = L;
 
-    type RightSeq = R;
+    type Right = R;
 
     type AddToLeft<T> = NonEmptyTypeSeq<T, Self>;
 
