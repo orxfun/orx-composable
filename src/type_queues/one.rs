@@ -14,7 +14,7 @@ impl<T> Default for OneQueue<T> {
 }
 
 impl<T> TypeQueue for OneQueue<T> {
-    type Push<X> = MultiQueue<Self, T>;
+    type Push<X> = MultiQueue<Self, X>;
 
     type QueueAfterPop = EmptyQueue;
 
