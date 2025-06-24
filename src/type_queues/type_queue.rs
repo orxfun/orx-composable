@@ -1,5 +1,7 @@
 pub trait TypeQueue {
-    type Push<T>;
+    type Push<X>;
 
-    type Pop;
+    type PoppedType;
+
+    type QueueAfterPop: TypeQueue;
 }

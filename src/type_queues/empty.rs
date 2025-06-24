@@ -1,10 +1,12 @@
-use crate::type_queues::type_queue::TypeQueue;
+use crate::type_queues::{never::Never, one::OneQueue, type_queue::TypeQueue};
 
 #[derive(Default)]
 pub struct EmptyQueue;
 
 impl TypeQueue for EmptyQueue {
-    type Push<T> = Self;
+    type Push<X> = OneQueue<X>;
 
-    type Pop = Self;
+    type PoppedType = Never;
+
+    type QueueAfterPop = EmptyQueue;
 }

@@ -1,3 +1,5 @@
 mod empty;
-mod non_empty;
+mod multi;
+mod never;
+mod one;
 mod type_queue;
