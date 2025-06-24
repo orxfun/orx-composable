@@ -1,7 +1,9 @@
 pub trait TypeSeq: Default {
     type Left;
 
-    type RightSeq: TypeSeq;
+    type RightSeq;
 
     type AddToLeft<T>: TypeSeq;
+
+    type AddToRight<T>: TypeSeq;
 }

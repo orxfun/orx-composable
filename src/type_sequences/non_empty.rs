@@ -13,13 +13,12 @@ impl<L, R> Default for NonEmptyTypeSeq<L, R> {
     }
 }
 
-impl<L, R> TypeSeq for NonEmptyTypeSeq<L, R>
-where
-    R: TypeSeq,
-{
+impl<L, R> TypeSeq for NonEmptyTypeSeq<L, R> {
     type Left = L;
 
     type RightSeq = R;
 
     type AddToLeft<T> = NonEmptyTypeSeq<T, Self>;
+
+    type AddToRight<T> = NonEmptyTypeSeq<Self, T>;
 }
