@@ -8,5 +8,5 @@ impl TypeSeq for EmptyTypeSeq {
 
     type RightSeq = Self;
 
-    type AddToRight<X> = NonEmptyTypeSeq<X, Self>;
+    type AddToLeft<X> = NonEmptyTypeSeq<X, Self>;
 }

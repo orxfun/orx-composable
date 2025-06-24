@@ -1,3 +1,6 @@
+#[cfg(test)]
+mod tests;
+
 mod empty;
 mod never;
 mod non_empty;
