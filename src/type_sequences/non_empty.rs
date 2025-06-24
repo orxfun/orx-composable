@@ -21,5 +21,5 @@ where
 
     type RightSeq = R;
 
-    type AddToLeft<X> = NonEmptyTypeSeq<X, Self>;
+    type AddToLeft<T> = NonEmptyTypeSeq<T, Self>;
 }
