@@ -13,6 +13,7 @@
 #![cfg_attr(not(test), no_std)]
 
 mod computation;
+mod compute_reduce;
 mod reduction;
 
 pub use computation::Computation;

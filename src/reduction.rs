@@ -17,6 +17,10 @@
 /// impl Reduction for Add {
 ///     type Unit = u32;
 ///
+///     fn identity(&self) -> Self::Unit {
+///         0
+///     }
+///
 ///     fn reduce(&self, a: Self::Unit, b: Self::Unit) -> Self::Unit {
 ///         a + b
 ///     }
@@ -43,6 +47,10 @@
 ///
 /// impl Reduction for MaxBelow42 {
 ///     type Unit = u32;
+///
+///     fn identity(&self) -> Self::Unit {
+///         0
+///     }
 ///
 ///     fn reduce(&self, a: Self::Unit, b: Self::Unit) -> Self::Unit {
 ///         (a.max(b)).min(self.upper_bound)
