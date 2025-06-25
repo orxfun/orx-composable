@@ -1,4 +1,4 @@
-use crate::type_queues::{
+use crate::type_queues_zzz::{
     empty::EmptyQueue,
     tests::utils::{assert_type, push},
 };
@@ -37,6 +37,6 @@ fn grow_many() {
 
     assert_type(
         &x,
-        "MultiQueue<MultiQueue<MultiQueue<OneQueue<char>,u32>,String>,bool>",
+        "MultiQueue<bool,MultiQueue<String,MultiQueue<OneQueue<char>,u32>>>",
     );
 }

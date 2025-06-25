@@ -1,4 +1,4 @@
-use crate::type_queues::{empty::EmptyQueue, multi::MultiQueue, type_queue::TypeQueue};
+use crate::type_queues_zzz::{empty::EmptyQueue, multi::MultiQueue, type_queue::TypeQueue};
 use std::marker::PhantomData;
 
 pub struct OneQueue<T> {

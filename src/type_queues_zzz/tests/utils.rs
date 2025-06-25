@@ -1,4 +1,4 @@
-use crate::type_queues::type_queue::TypeQueue;
+use crate::type_queues_zzz::type_queue::TypeQueue;
 use std::any::type_name_of_val;
 
 pub fn format(type_name: impl ToString) -> String {
@@ -35,6 +35,7 @@ pub fn pop<Q>(
 where
     Q: TypeQueue,
     <Q as TypeQueue>::PoppedType: Default,
+    <Q as TypeQueue>::QueueAfterPop: Default,
 {
     Default::default()
 }

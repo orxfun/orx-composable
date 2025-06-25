@@ -1,4 +1,4 @@
-use crate::type_queues::type_queue::TypeQueue;
+use crate::type_queues_zzz::type_queue::TypeQueue;
 use std::marker::PhantomData;
 
 pub struct MultiQueue<L, R> {
@@ -13,13 +13,10 @@ impl<L, R> Default for MultiQueue<L, R> {
     }
 }
 
-impl<L, R> TypeQueue for MultiQueue<L, R>
-where
-    L: TypeQueue,
-{
-    type Push<X> = MultiQueue<Self, X>;
+impl<L, R> TypeQueue for MultiQueue<L, R> {
+    type Push<X> = MultiQueue<X, Self>;
 
-    type QueueAfterPop = L;
+    type QueueAfterPop = R;
 
-    type PoppedType = R;
+    type PoppedType = L;
 }

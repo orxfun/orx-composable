@@ -5,3 +5,10 @@ version = 4
 [[package]]
 name = "orx-composable"
 version = "0.1.0"
+dependencies = [
+ "orx-meta-queue",
+]
+
+[[package]]
+name = "orx-meta-queue"
+version = "1.0.0"
