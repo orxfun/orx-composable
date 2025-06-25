@@ -12,6 +12,8 @@
 )]
 #![cfg_attr(not(test), no_std)]
 
+mod computation;
 mod reduction;
 
+pub use computation::Computation;
 pub use reduction::Reduction;
