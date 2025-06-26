@@ -12,6 +12,9 @@
 )]
 #![cfg_attr(not(test), no_std)]
 
+#[cfg(test)]
+mod tests;
+
 mod composition;
 mod computation;
 /// Module defining the [`ReducibleComputation`] trait and its implementations.

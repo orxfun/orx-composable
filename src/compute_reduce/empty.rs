@@ -1,3 +1,5 @@
+use orx_meta_queue::Empty;
+
 use crate::{
     Computation, Reduction,
     compute_reduce::{com_red::ReducibleComputation, one::ReducibleComputationOne},
@@ -27,9 +29,11 @@ impl<R> ReducibleComputation for ReducibleComputationEmpty<R>
 where
     R: Reduction,
 {
+    type R = R;
+
     type In<'i> = ();
 
-    type R = R;
+    type InQueue<'i> = Empty;
 
     type Compose<C>
         = ReducibleComputationOne<R, C>

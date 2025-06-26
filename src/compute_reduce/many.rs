@@ -1,6 +1,7 @@
 use super::com_red::ReducibleComputation;
 use crate::{Computation, Reduction, compute_reduce::one::ReducibleComputationOne};
 use core::marker::PhantomData;
+use orx_meta_queue::MetaQueue;
 
 /// A [`ReducibleComputation`] with two or more composed computation.
 pub struct ReducibleComputationMany<R, C1, C2> {
@@ -25,9 +26,11 @@ where
     C1: ReducibleComputation<R = R>,
     C2: ReducibleComputation<R = R>,
 {
+    type R = R;
+
     type In<'i> = (C1::In<'i>, C2::In<'i>);
 
-    type R = R;
+    type InQueue<'i> = <C1::InQueue<'i> as MetaQueue>::Extend<C2::InQueue<'i>>;
 
     type Compose<C>
         = ReducibleComputationMany<R, Self, ReducibleComputationOne<R, C>>

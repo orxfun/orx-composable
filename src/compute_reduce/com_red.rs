@@ -1,4 +1,5 @@
 use crate::{Computation, Reduction};
+use orx_meta_queue::MetaQueue;
 
 /// A computation and a reduction, which can be composed since the output
 /// of the computation is the unit of the reduction.
@@ -76,11 +77,13 @@ pub trait ReducibleComputation {
     /// Input of the computation.
     ///
     /// Note that output of the computation is equal to the unit of the
+    /// Reduction used to compose multiple computations over their results.
+    type R: Reduction;
+
     /// reduction `Self::R`.
     type In<'i>;
 
-    /// Reduction used to compose multiple computations over their results.
-    type R: Reduction;
+    type InQueue<'i>: MetaQueue;
 
     /// Type obtained by composing this [`ReducibleComputation`] with the computation
     /// `C` having the same output type.

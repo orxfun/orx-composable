@@ -1,3 +1,5 @@
+use orx_meta_queue::{Empty, MetaQueue, One};
+
 use super::com_red::ReducibleComputation;
 use crate::{Computation, Reduction, compute_reduce::many::ReducibleComputationMany};
 use core::marker::PhantomData;
@@ -22,9 +24,11 @@ where
     R: Reduction,
     C1: Computation<Out = R::Unit>,
 {
+    type R = R;
+
     type In<'i> = C1::In<'i>;
 
-    type R = R;
+    type InQueue<'i> = One<Self::In<'i>>;
 
     type Compose<C2>
         = ReducibleComputationMany<R, Self, ReducibleComputationOne<R, C2>>
