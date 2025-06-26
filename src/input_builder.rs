@@ -1,3 +1,104 @@
-use orx_meta_queue::{MetaQueue, TupleQueue};
+use orx_meta_queue::TupleQueue;
 
-pub type InputBuilder<M: MetaQueue> = TupleQueue<M>;
+/// A type-safe input builder to build the inputs of a computation by adding
+/// input of each computation one by one.
+///
+/// Once all input pieces are added `value` can be called to obtained the
+/// composed input. Note that `value` cannot be called beforehand.
+///
+/// Consider for instance, a composition of four computations over a particular
+/// reduction. Assume the inputs of these computations are 'a: A', 'b: B', 'c: C'
+/// and 'd: D' in the order they are composed. Then, input of the composed computation
+/// is represented as recursively composed tuples, `(((a, b), c), d)` in this example.
+/// Typing out this type becomes more and more complicated as we keep composing
+/// more computations.
+///
+/// `InputBuilder` allows to avoid this complexity and allows to the create the input type
+/// by adding the inputs one after the other:
+///
+/// ```ignore
+/// let input: (((A, B), C), D) = computation
+///     .input_builder()
+///     .add(a)
+///     .add(b)
+///     .add(c)
+///     .add(d)
+///     .value();
+///
+/// let result = computation.compute(input);
+/// ```
+///
+/// Note that the input builder is type-safe due to the following:
+/// * `add` calls cannot be made with wrong types,
+/// * `add` calls cannot be made in wrong order,
+/// * `value` cannot be called before making exactly the required sequence of `add` calls.
+///
+/// # Examples
+///
+/// The following example demonstrates composition of three computations over
+/// the reduction `Add`, and use of input builder to call the composed computation with
+/// different inputs.
+///
+/// ```
+/// use orx_composable::*;
+///
+/// pub struct Add;
+///
+/// impl Reduction for Add {
+///     type Unit = usize;
+///
+///     fn identity(&self) -> Self::Unit {
+///         0
+///     }
+///
+///     fn reduce(&self, a: Self::Unit, b: Self::Unit) -> Self::Unit {
+///         a + b
+///     }
+/// }
+///
+/// pub struct StrLen;
+///
+/// impl Computation for StrLen {
+///     type In<'i> = &'i str;
+///
+///     type Out = usize;
+///
+///     fn compute(&self, str: Self::In<'_>) -> Self::Out {
+///         str.len()
+///     }
+/// }
+///
+/// pub struct SliceLen;
+///
+/// impl Computation for SliceLen {
+///     type In<'i> = &'i [bool];
+///
+///     type Out = usize;
+///
+///     fn compute(&self, slice: Self::In<'_>) -> Self::Out {
+///         slice.len()
+///     }
+/// }
+///
+/// let c = Composition::new(Add)
+///     .compose(StrLen)
+///     .compose(SliceLen)
+///     .compose(NumEvens);
+///
+/// let input = c
+///     .input_builder()
+///     .add("abc")
+///     .add(&[true, false])
+///     .add(vec![1, 2, 4, 6])
+///     .value();
+/// assert_eq!(c.compute(input), 8);
+///
+/// let input = c
+///     .input_builder()
+///     .add("x")
+///     .add(&[false])
+///     .add(vec![1])
+///     .value();
+/// assert_eq!(c.compute(input), 2);
+/// ```
+pub type InputBuilder<M> = TupleQueue<M>;
