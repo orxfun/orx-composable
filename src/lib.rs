@@ -12,9 +12,12 @@
 )]
 #![cfg_attr(not(test), no_std)]
 
+mod composition;
 mod computation;
-mod compute_reduce;
+/// Module defining the [`ComputeReduce`] trait and its implementations.
+pub mod compute_reduce;
 mod reduction;
 
 pub use computation::Computation;
+pub use compute_reduce::ComputeReduce;
 pub use reduction::Reduction;

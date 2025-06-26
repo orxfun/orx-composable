@@ -1,20 +1,29 @@
 use crate::{
     Computation, Reduction,
-    compute_reduce::{com_red::ComRed, one::ComRed1},
+    compute_reduce::{com_red::ComputeReduce, one::ComputeReduceOne},
 };
 use core::marker::PhantomData;
 
-pub struct ComRed0<R> {
+/// A [`ComputeReduce`] with no composed computation.
+pub struct ComputeReduceEmpty<R> {
     p: PhantomData<R>,
 }
 
-impl<R> ComRed0<R> {
-    pub(super) fn new() -> Self {
+impl<R> Default for ComputeReduceEmpty<R> {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl<R> ComputeReduceEmpty<R> {
+    /// Creates a new empty [`ComputeReduce`], which is the starting point
+    /// for composed computations.
+    pub fn new() -> Self {
         Self { p: PhantomData }
     }
 }
 
-impl<R> ComRed for ComRed0<R>
+impl<R> ComputeReduce for ComputeReduceEmpty<R>
 where
     R: Reduction,
 {
@@ -23,7 +32,7 @@ where
     type R = R;
 
     type Compose<C>
-        = ComRed1<R, C>
+        = ComputeReduceOne<R, C>
     where
         C: Computation<Out = <Self::R as Reduction>::Unit>;
 
@@ -31,7 +40,7 @@ where
     where
         C: Computation<Out = <Self::R as Reduction>::Unit>,
     {
-        ComRed1::new(other)
+        ComputeReduceOne::new(other)
     }
 
     fn compute_reduce<'i>(

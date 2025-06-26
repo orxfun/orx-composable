@@ -1,13 +1,14 @@
-use super::com_red::ComRed;
-use crate::{Computation, Reduction, compute_reduce::many::ComRedN};
+use super::com_red::ComputeReduce;
+use crate::{Computation, Reduction, compute_reduce::many::ComputeReduceMany};
 use core::marker::PhantomData;
 
-pub struct ComRed1<R, C1> {
+/// A [`ComputeReduce`] with one composed computation.
+pub struct ComputeReduceOne<R, C1> {
     c1: C1,
     p: PhantomData<R>,
 }
 
-impl<R, C1> ComRed1<R, C1> {
+impl<R, C1> ComputeReduceOne<R, C1> {
     pub(super) fn new(computation: C1) -> Self {
         Self {
             c1: computation,
@@ -16,7 +17,7 @@ impl<R, C1> ComRed1<R, C1> {
     }
 }
 
-impl<R, C1> ComRed for ComRed1<R, C1>
+impl<R, C1> ComputeReduce for ComputeReduceOne<R, C1>
 where
     R: Reduction,
     C1: Computation<Out = R::Unit>,
@@ -26,7 +27,7 @@ where
     type R = R;
 
     type Compose<C2>
-        = ComRedN<R, Self, ComRed1<R, C2>>
+        = ComputeReduceMany<R, Self, ComputeReduceOne<R, C2>>
     where
         C2: Computation<Out = <Self::R as Reduction>::Unit>;
 
@@ -34,7 +35,7 @@ where
     where
         C: Computation<Out = <Self::R as Reduction>::Unit>,
     {
-        ComRedN::new(self, ComRed1::new(other))
+        ComputeReduceMany::new(self, ComputeReduceOne::new(other))
     }
 
     #[inline(always)]
