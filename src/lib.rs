@@ -14,11 +14,11 @@
 
 mod composition;
 mod computation;
-/// Module defining the [`ComputeReduce`] trait and its implementations.
+/// Module defining the [`ReducibleComputation`] trait and its implementations.
 pub mod compute_reduce;
 mod reduction;
 
 pub use composition::Composition;
 pub use computation::Computation;
-pub use compute_reduce::ComputeReduce;
+pub use compute_reduce::ReducibleComputation;
 pub use reduction::Reduction;

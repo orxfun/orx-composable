@@ -1,4 +1,6 @@
-use crate::{Computation, ComputeReduce, Reduction, compute_reduce::ComputeReduceEmpty};
+use crate::{
+    Computation, ReducibleComputation, Reduction, compute_reduce::ReducibleComputationEmpty,
+};
 
 /// A reduction `R` and a reducible over `R` computation `C`, providing [`compose`] and [`compute`]
 /// methods.
@@ -10,6 +12,8 @@ use crate::{Computation, ComputeReduce, Reduction, compute_reduce::ComputeReduce
 /// inputs, while all returning a number.
 ///
 /// ```
+/// use orx_composable::*;
+///
 /// struct Add;
 ///
 /// impl Reduction for Add {
@@ -85,13 +89,13 @@ use crate::{Computation, ComputeReduce, Reduction, compute_reduce::ComputeReduce
 pub struct Composition<R, C>
 where
     R: Reduction,
-    C: ComputeReduce<R = R>,
+    C: ReducibleComputation<R = R>,
 {
     reduction: R,
     computation: C,
 }
 
-impl<R> Composition<R, ComputeReduceEmpty<R>>
+impl<R> Composition<R, ReducibleComputationEmpty<R>>
 where
     R: Reduction,
 {
@@ -107,7 +111,7 @@ where
 impl<R, C> Composition<R, C>
 where
     R: Reduction,
-    C: ComputeReduce<R = R>,
+    C: ReducibleComputation<R = R>,
 {
     /// Composes this computation with the `other` over the reduction `R` and returns
     /// the resulting computation.
@@ -125,7 +129,7 @@ where
 impl<R, C> Computation for Composition<R, C>
 where
     R: Reduction,
-    C: ComputeReduce<R = R>,
+    C: ReducibleComputation<R = R>,
 {
     type In<'i> = C::In<'i>;
 
@@ -140,6 +144,8 @@ where
     /// inputs, while all returning a number.
     ///
     /// ```
+    /// use orx_composable::*;
+    ///
     /// struct Add;
     ///
     /// impl Reduction for Add {

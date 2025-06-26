@@ -131,8 +131,8 @@ mod tests {
 
     use super::*;
     use crate::{
-        compute_reduce::ComputeReduce,
-        compute_reduce2::ComputeReduce2,
+        compute_reduce::ReducibleComputation,
+        compute_reduce2::ReducibleComputation2,
         compute_with_reduction::ComputeWithReduction,
         type_sequence::{Many, One},
         *,
@@ -198,11 +198,11 @@ mod tests {
             .compose(true)
             .compose(String::from("abc"));
 
-        type A = ComputeReduce2<
+        type A = ReducibleComputation2<
             And,
-            ComputeReduce2<
+            ReducibleComputation2<
                 And,
-                ComputeReduce2<
+                ReducibleComputation2<
                     And,
                     ComputeWithReduction<And, u32>,
                     ComputeWithReduction<And, char>,
@@ -215,8 +215,8 @@ mod tests {
             Many<u32, Many<char, Many<bool, One<String>>>>,
         >;
 
-        // type X<'i> = <A as ComputeReduce>::ComputeSequence;
-        println!("{:?}", type_name::<<A as ComputeReduce>::ComputeSequence>());
+        // type X<'i> = <A as ReducibleComputation>::ComputeSequence;
+        println!("{:?}", type_name::<<A as ReducibleComputation>::ComputeSequence>());
 
         type X = Many<u32, Many<char, Many<bool, One<String>>>>;
         type Left = <X as TypeSequence>::SplitLeft;

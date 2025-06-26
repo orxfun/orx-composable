@@ -1,7 +1,7 @@
 use crate::{
     compute::Compute,
-    compute_reduce::ComputeReduce,
-    compute_reduce2::ComputeReduce2,
+    compute_reduce::ReducibleComputation,
+    compute_reduce2::ReducibleComputation2,
     reduce::Reduce,
     type_sequence::{End, One, TypeSequence},
 };
@@ -12,7 +12,7 @@ where
     R: Reduce,
     C1: Compute<Out = R::Unit>;
 
-impl<R, C1> ComputeReduce for ComputeWithReduction<R, C1>
+impl<R, C1> ReducibleComputation for ComputeWithReduction<R, C1>
 where
     R: Reduce,
     C1: Compute<Out = R::Unit>,
@@ -22,7 +22,7 @@ where
     type R = R;
 
     type Composed<C2>
-        = ComputeReduce2<
+        = ReducibleComputation2<
         R,
         Self,
         ComputeWithReduction<R, C2>,
@@ -41,6 +41,6 @@ where
     where
         C2: Compute<Out = <Self::R as Reduce>::Unit>,
     {
-        ComputeReduce2(PhantomData, self, ComputeWithReduction(PhantomData, other))
+        ReducibleComputation2(PhantomData, self, ComputeWithReduction(PhantomData, other))
     }
 }

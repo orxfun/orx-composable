@@ -1,14 +1,14 @@
-use super::com_red::ComputeReduce;
-use crate::{Computation, Reduction, compute_reduce::many::ComputeReduceMany};
+use super::com_red::ReducibleComputation;
+use crate::{Computation, Reduction, compute_reduce::many::ReducibleComputationMany};
 use core::marker::PhantomData;
 
-/// A [`ComputeReduce`] with one composed computation.
-pub struct ComputeReduceOne<R, C1> {
+/// A [`ReducibleComputation`] with one composed computation.
+pub struct ReducibleComputationOne<R, C1> {
     c1: C1,
     p: PhantomData<R>,
 }
 
-impl<R, C1> ComputeReduceOne<R, C1> {
+impl<R, C1> ReducibleComputationOne<R, C1> {
     pub(super) fn new(computation: C1) -> Self {
         Self {
             c1: computation,
@@ -17,7 +17,7 @@ impl<R, C1> ComputeReduceOne<R, C1> {
     }
 }
 
-impl<R, C1> ComputeReduce for ComputeReduceOne<R, C1>
+impl<R, C1> ReducibleComputation for ReducibleComputationOne<R, C1>
 where
     R: Reduction,
     C1: Computation<Out = R::Unit>,
@@ -27,7 +27,7 @@ where
     type R = R;
 
     type Compose<C2>
-        = ComputeReduceMany<R, Self, ComputeReduceOne<R, C2>>
+        = ReducibleComputationMany<R, Self, ReducibleComputationOne<R, C2>>
     where
         C2: Computation<Out = <Self::R as Reduction>::Unit>;
 
@@ -35,7 +35,7 @@ where
     where
         C: Computation<Out = <Self::R as Reduction>::Unit>,
     {
-        ComputeReduceMany::new(self, ComputeReduceOne::new(other))
+        ReducibleComputationMany::new(self, ReducibleComputationOne::new(other))
     }
 
     #[inline(always)]

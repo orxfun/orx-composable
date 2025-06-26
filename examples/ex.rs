@@ -1,6 +1,6 @@
 // use orx_composable::{
-//     compute_reduce::ComputeReduce,
-//     compute_reduce2::ComputeReduce2,
+//     compute_reduce::ReducibleComputation,
+//     compute_reduce2::ReducibleComputation2,
 //     compute_with_reduction::ComputeWithReduction,
 //     type_sequence::{Many, One},
 //     *,
@@ -101,9 +101,9 @@
 //         .compose(no_backlogs)
 //         .compose(no_delayed_orders);
 
-//     type C = ComputeReduce2<
+//     type C = ReducibleComputation2<
 //         And,
-//         ComputeReduce2<
+//         ReducibleComputation2<
 //             And,
 //             ComputeWithReduction<And, SufficientStockLevels>,
 //             ComputeWithReduction<And, NoBacklogs>,
@@ -113,7 +113,7 @@
 //         Many<SufficientStockLevels, Many<NoBacklogs, One<NoDelayedOrders>>>,
 //     >;
 
-//     type X<'i> = <C as ComputeReduce>::ComputeSequence;
+//     type X<'i> = <C as ReducibleComputation>::ComputeSequence;
 //     // type Y = usize;
 
 //     println!("{:?}", type_name::<X>());

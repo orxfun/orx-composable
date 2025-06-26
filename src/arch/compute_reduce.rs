@@ -1,11 +1,11 @@
 use crate::{compute::Compute, reduce::Reduce, type_sequence::TypeSequence};
 
-pub trait ComputeReduce: Sized {
+pub trait ReducibleComputation: Sized {
     type In<'i>;
 
     type R: Reduce;
 
-    type Composed<C>: ComputeReduce<R = Self::R>
+    type Composed<C>: ReducibleComputation<R = Self::R>
     where
         C: Compute<Out = <Self::R as Reduce>::Unit>;
 

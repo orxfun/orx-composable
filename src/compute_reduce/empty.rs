@@ -1,29 +1,29 @@
 use crate::{
     Computation, Reduction,
-    compute_reduce::{com_red::ComputeReduce, one::ComputeReduceOne},
+    compute_reduce::{com_red::ReducibleComputation, one::ReducibleComputationOne},
 };
 use core::marker::PhantomData;
 
-/// A [`ComputeReduce`] with no composed computation.
-pub struct ComputeReduceEmpty<R> {
+/// A [`ReducibleComputation`] with no composed computation.
+pub struct ReducibleComputationEmpty<R> {
     p: PhantomData<R>,
 }
 
-impl<R> Default for ComputeReduceEmpty<R> {
+impl<R> Default for ReducibleComputationEmpty<R> {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl<R> ComputeReduceEmpty<R> {
-    /// Creates a new empty [`ComputeReduce`], which is the starting point
+impl<R> ReducibleComputationEmpty<R> {
+    /// Creates a new empty [`ReducibleComputation`], which is the starting point
     /// for composed computations.
     pub fn new() -> Self {
         Self { p: PhantomData }
     }
 }
 
-impl<R> ComputeReduce for ComputeReduceEmpty<R>
+impl<R> ReducibleComputation for ReducibleComputationEmpty<R>
 where
     R: Reduction,
 {
@@ -32,7 +32,7 @@ where
     type R = R;
 
     type Compose<C>
-        = ComputeReduceOne<R, C>
+        = ReducibleComputationOne<R, C>
     where
         C: Computation<Out = <Self::R as Reduction>::Unit>;
 
@@ -40,7 +40,7 @@ where
     where
         C: Computation<Out = <Self::R as Reduction>::Unit>,
     {
-        ComputeReduceOne::new(other)
+        ReducibleComputationOne::new(other)
     }
 
     fn compute_reduce<'i>(

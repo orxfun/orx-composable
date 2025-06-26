@@ -6,7 +6,7 @@ mod empty;
 mod many;
 mod one;
 
-pub use com_red::ComputeReduce;
-pub use empty::ComputeReduceEmpty;
-pub use many::ComputeReduceMany;
-pub use one::ComputeReduceOne;
+pub use com_red::ReducibleComputation;
+pub use empty::ReducibleComputationEmpty;
+pub use many::ReducibleComputationMany;
+pub use one::ReducibleComputationOne;

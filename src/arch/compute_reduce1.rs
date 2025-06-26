@@ -1,23 +1,23 @@
 use crate::{
     compute::Compute,
-    compute_reduce::ComputeReduce,
-    compute_reduce2::ComputeReduce2,
+    compute_reduce::ReducibleComputation,
+    compute_reduce2::ReducibleComputation2,
     compute_with_reduction::ComputeWithReduction,
     reduce::Reduce,
     type_sequence::{One, TypeSequence},
 };
 use std::marker::PhantomData;
 
-pub struct ComputeReduce1<R, C1, C>(pub(super) PhantomData<(R, C)>, pub(super) C1)
+pub struct ReducibleComputation1<R, C1, C>(pub(super) PhantomData<(R, C)>, pub(super) C1)
 where
     R: Reduce,
-    C1: ComputeReduce<R = R>,
+    C1: ReducibleComputation<R = R>,
     C: Compute<Out = R::Unit>;
 
-impl<R, C1, C> ComputeReduce for ComputeReduce1<R, C1, C>
+impl<R, C1, C> ReducibleComputation for ReducibleComputation1<R, C1, C>
 where
     R: Reduce,
-    C1: ComputeReduce<R = R>,
+    C1: ReducibleComputation<R = R>,
     C: Compute<Out = R::Unit>,
 {
     type In<'i> = C1::In<'i>;
@@ -25,7 +25,7 @@ where
     type R = R;
 
     type Composed<C2>
-        = ComputeReduce2<
+        = ReducibleComputation2<
         R,
         C1,
         ComputeWithReduction<R, C2>,
@@ -48,7 +48,7 @@ where
     where
         C2: Compute<Out = <Self::R as Reduce>::Unit>,
     {
-        ComputeReduce2(
+        ReducibleComputation2(
             PhantomData,
             self.1,
             ComputeWithReduction(PhantomData, other),

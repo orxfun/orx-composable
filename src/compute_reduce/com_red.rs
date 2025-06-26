@@ -9,7 +9,7 @@ use crate::{Computation, Reduction};
 /// `usize` over `Add` used as the reduction.
 ///
 /// ```
-/// use orx_composable::compute_reduce::ComputeReduceEmpty;
+/// use orx_composable::compute_reduce::ReducibleComputationEmpty;
 /// use orx_composable::*;
 ///
 /// struct Add;
@@ -62,7 +62,7 @@ use crate::{Computation, Reduction};
 ///     }
 /// }
 ///
-/// let c = ComputeReduceEmpty::<Add>::new();
+/// let c = ReducibleComputationEmpty::<Add>::new();
 /// let c = c.compose(StrLen);
 /// let c = c.compose(SliceLen);
 /// let c = c.compose(NumEvens);
@@ -72,7 +72,7 @@ use crate::{Computation, Reduction};
 ///     8
 /// );
 /// ```
-pub trait ComputeReduce {
+pub trait ReducibleComputation {
     /// Input of the computation.
     ///
     /// Note that output of the computation is equal to the unit of the
@@ -82,13 +82,13 @@ pub trait ComputeReduce {
     /// Reduction used to compose multiple computations over their results.
     type R: Reduction;
 
-    /// Type obtained by composing this [`ComputeReduce`] with the computation
+    /// Type obtained by composing this [`ReducibleComputation`] with the computation
     /// `C` having the same output type.
-    type Compose<C>: ComputeReduce<R = Self::R>
+    type Compose<C>: ReducibleComputation<R = Self::R>
     where
         C: Computation<Out = <Self::R as Reduction>::Unit>;
 
-    /// Composes this [`ComputeReduce`] with the computation `C` having the same
+    /// Composes this [`ReducibleComputation`] with the computation `C` having the same
     /// output type over reduction `R`.
     fn compose<C>(self, other: C) -> Self::Compose<C>
     where
@@ -111,7 +111,7 @@ pub trait ComputeReduce {
     /// over addition as the reduction.
     ///
     /// ```
-    /// use orx_composable::compute_reduce::ComputeReduceEmpty;
+    /// use orx_composable::compute_reduce::ReducibleComputationEmpty;
     /// use orx_composable::*;
     ///
     /// struct Add;
@@ -165,21 +165,21 @@ pub trait ComputeReduce {
     /// }
     ///
     /// // compose 0
-    /// let c = ComputeReduceEmpty::<Add>::new();
+    /// let c = ReducibleComputationEmpty::<Add>::new();
     /// assert_eq!(c.compute_reduce(&Add, ()), 0);
     ///
     /// // compose 1
-    /// let c = ComputeReduceEmpty::<Add>::new().compose(StrLen);
+    /// let c = ReducibleComputationEmpty::<Add>::new().compose(StrLen);
     /// assert_eq!(c.compute_reduce(&Add, "xyz"), 3);
     ///
     /// // compose 2
-    /// let c = ComputeReduceEmpty::<Add>::new()
+    /// let c = ReducibleComputationEmpty::<Add>::new()
     ///     .compose(StrLen)
     ///     .compose(SliceLen);
     /// assert_eq!(c.compute_reduce(&Add, ("xyz", &[true, false])), 5);
     ///
     /// // compose 3
-    /// let c = ComputeReduceEmpty::<Add>::new()
+    /// let c = ReducibleComputationEmpty::<Add>::new()
     ///     .compose(StrLen)
     ///     .compose(SliceLen)
     ///     .compose(NumEvens);

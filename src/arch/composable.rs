@@ -1,5 +1,5 @@
 use crate::{
-    compute::Compute, compute_reduce::ComputeReduce, compute_reduce0::ComputeReduce0,
+    compute::Compute, compute_reduce::ReducibleComputation, compute_reduce0::ReducibleComputation0,
     input_builder0_zzz::InputBuilder0Zzz, reduce::Reduce,
 };
 use std::marker::PhantomData;
@@ -7,21 +7,21 @@ use std::marker::PhantomData;
 pub struct Composable<R, C>(R, C)
 where
     R: Reduce,
-    C: ComputeReduce<R = R>;
+    C: ReducibleComputation<R = R>;
 
-impl<R> Composable<R, ComputeReduce0<R>>
+impl<R> Composable<R, ReducibleComputation0<R>>
 where
     R: Reduce,
 {
     pub fn new(reduce: R) -> Self {
-        Self(reduce, ComputeReduce0(PhantomData))
+        Self(reduce, ReducibleComputation0(PhantomData))
     }
 }
 
 impl<R, C> Composable<R, C>
 where
     R: Reduce,
-    C: ComputeReduce<R = R>,
+    C: ReducibleComputation<R = R>,
 {
     pub fn compose<C2>(self, other: C2) -> Composable<R, C::Composed<C2>>
     where
@@ -38,7 +38,7 @@ where
 impl<R, C> Compute for Composable<R, C>
 where
     R: Reduce,
-    C: ComputeReduce<R = R>,
+    C: ReducibleComputation<R = R>,
 {
     type In<'i> = C::In<'i>;
 

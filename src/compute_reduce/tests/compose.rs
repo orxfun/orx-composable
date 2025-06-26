@@ -1,6 +1,6 @@
 use crate::{
     Computation, Reduction,
-    compute_reduce::{com_red::ComputeReduce, empty::ComputeReduceEmpty},
+    compute_reduce::{com_red::ReducibleComputation, empty::ReducibleComputationEmpty},
 };
 
 struct Add;
@@ -67,13 +67,13 @@ impl Computation for BoundedBy10 {
 
 #[test]
 fn compose_zero() {
-    let c = ComputeReduceEmpty::<Add>::new();
+    let c = ReducibleComputationEmpty::<Add>::new();
     assert_eq!(c.compute_reduce(&Add, ()), 0);
 }
 
 #[test]
 fn compose_one() {
-    let c = ComputeReduceEmpty::<Add>::new();
+    let c = ReducibleComputationEmpty::<Add>::new();
     let c = c.compose(NumEvens);
 
     assert_eq!(c.compute_reduce(&Add, vec![1, 2, 3, 4, 5]), 2);
@@ -81,7 +81,7 @@ fn compose_one() {
 
 #[test]
 fn compose_two() {
-    let c = ComputeReduceEmpty::<Add>::new();
+    let c = ReducibleComputationEmpty::<Add>::new();
     let c = c.compose(StrLen);
     let c = c.compose(SliceLen);
 
@@ -90,7 +90,7 @@ fn compose_two() {
 
 #[test]
 fn compose_three() {
-    let c = ComputeReduceEmpty::<Add>::new();
+    let c = ReducibleComputationEmpty::<Add>::new();
     let c = c.compose(StrLen);
     let c = c.compose(SliceLen);
     let c = c.compose(NumEvens);
@@ -103,7 +103,7 @@ fn compose_three() {
 
 #[test]
 fn compose_four() {
-    let c = ComputeReduceEmpty::<Add>::new();
+    let c = ReducibleComputationEmpty::<Add>::new();
     let c = c.compose(StrLen);
     let c = c.compose(SliceLen);
     let c = c.compose(NumEvens);
