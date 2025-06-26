@@ -18,6 +18,7 @@ mod computation;
 pub mod compute_reduce;
 mod reduction;
 
+pub use composition::Composition;
 pub use computation::Computation;
 pub use compute_reduce::ComputeReduce;
 pub use reduction::Reduction;

@@ -111,7 +111,7 @@ pub trait Computation {
     /// Output of the computation.
     type Out;
 
-    /// Computes and returns the output.
+    /// Computes output for the given `input`.
     ///
     /// See [`Computation`] for examples.
     fn compute(&self, input: Self::In<'_>) -> Self::Out;
