@@ -84,7 +84,7 @@ pub trait ComputeReduce {
 
     /// Type obtained by composing this [`ComputeReduce`] with the computation
     /// `C` having the same output type.
-    type Compose<C>
+    type Compose<C>: ComputeReduce<R = Self::R>
     where
         C: Computation<Out = <Self::R as Reduction>::Unit>;
 
