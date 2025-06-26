@@ -1,5 +1,6 @@
 use crate::{
-    Computation, ReducibleComputation, Reduction, compute_reduce::ReducibleComputationEmpty,
+    Computation, InputBuilder, ReducibleComputation, Reduction,
+    compute_reduce::ReducibleComputationEmpty,
 };
 
 /// A reduction `R` and a reducible over `R` computation `C`, providing [`compose`] and [`compute`]
@@ -123,6 +124,10 @@ where
             reduction: self.reduction,
             computation: self.computation.compose(other),
         }
+    }
+
+    pub fn input_builder(&self) -> InputBuilder<C::InQueue<'_>> {
+        Default::default()
     }
 }
 
