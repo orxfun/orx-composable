@@ -36,3 +36,18 @@ where
         }
     }
 }
+
+impl<R, C> Computation for Composition<R, C>
+where
+    R: Reduction,
+    C: ComputeReduce<R = R>,
+{
+    type In<'i> = C::In<'i>;
+
+    type Out = R::Unit;
+
+    #[inline(always)]
+    fn compute(&self, input: Self::In<'_>) -> Self::Out {
+        self.computation.compute_reduce(&self.reduction, input)
+    }
+}
