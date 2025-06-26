@@ -74,15 +74,16 @@ use orx_meta_queue::MetaQueue;
 /// );
 /// ```
 pub trait ReducibleComputation {
+    /// Reduction over which multiple computations will be composed.
+    type R: Reduction;
+
     /// Input of the computation.
     ///
     /// Note that output of the computation is equal to the unit of the
     /// Reduction used to compose multiple computations over their results.
-    type R: Reduction;
-
-    /// reduction `Self::R`.
     type In<'i>;
 
+    /// Input queue of the computation.
     type InQueue<'i>: MetaQueue;
 
     /// Type obtained by composing this [`ReducibleComputation`] with the computation
