@@ -90,13 +90,13 @@ pub trait ReducibleComputation {
     /// `C` having the same output type.
     type Compose<C>: ReducibleComputation<R = Self::R>
     where
-        C: Computation<Out = <Self::R as Reduction>::Unit>;
+        for<'i> C: Computation<Out<'i> = <Self::R as Reduction>::Unit<'i>>;
 
     /// Composes this [`ReducibleComputation`] with the computation `C` having the same
     /// output type over reduction `R`.
     fn compose<C>(self, other: C) -> Self::Compose<C>
     where
-        C: Computation<Out = <Self::R as Reduction>::Unit>;
+        for<'i> C: Computation<Out<'i> = <Self::R as Reduction>::Unit<'i>>;
 
     /// Computes-reduces and returns the result.
     ///
@@ -194,7 +194,7 @@ pub trait ReducibleComputation {
     /// ```
     fn compute_reduce<'i>(
         &self,
-        reduction: &Self::R,
+        reduction: &'i Self::R,
         input: Self::In<'i>,
-    ) -> <Self::R as Reduction>::Unit;
+    ) -> <Self::R as Reduction>::Unit<'i>;
 }

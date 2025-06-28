@@ -38,20 +38,20 @@ where
     type Compose<C>
         = ReducibleComputationOne<R, C>
     where
-        C: Computation<Out = <Self::R as Reduction>::Unit>;
+        for<'i> C: Computation<Out<'i> = <Self::R as Reduction>::Unit<'i>>;
 
     fn compose<C>(self, other: C) -> Self::Compose<C>
     where
-        C: Computation<Out = <Self::R as Reduction>::Unit>,
+        for<'i> C: Computation<Out<'i> = <Self::R as Reduction>::Unit<'i>>,
     {
         ReducibleComputationOne::new(other)
     }
 
     fn compute_reduce<'i>(
         &self,
-        reduction: &Self::R,
+        reduction: &'i Self::R,
         _: Self::In<'i>,
-    ) -> <Self::R as Reduction>::Unit {
+    ) -> <Self::R as Reduction>::Unit<'i> {
         reduction.identity()
     }
 }

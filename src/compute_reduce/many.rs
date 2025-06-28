@@ -35,20 +35,20 @@ where
     type Compose<C>
         = ReducibleComputationMany<R, Self, ReducibleComputationOne<R, C>>
     where
-        C: Computation<Out = <Self::R as Reduction>::Unit>;
+        for<'i> C: Computation<Out<'i> = <Self::R as Reduction>::Unit<'i>>;
 
     fn compose<C>(self, other: C) -> Self::Compose<C>
     where
-        C: Computation<Out = <Self::R as Reduction>::Unit>,
+        for<'i> C: Computation<Out<'i> = <Self::R as Reduction>::Unit<'i>>,
     {
         ReducibleComputationMany::new(self, ReducibleComputationOne::<R, _>::new(other))
     }
 
     fn compute_reduce<'i>(
         &self,
-        reduction: &Self::R,
+        reduction: &'i Self::R,
         (in1, in2): Self::In<'i>,
-    ) -> <Self::R as Reduction>::Unit {
+    ) -> <Self::R as Reduction>::Unit<'i> {
         reduction.reduce(
             self.c1.compute_reduce(reduction, in1),
             self.c2.compute_reduce(reduction, in2),

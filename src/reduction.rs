@@ -64,7 +64,7 @@
 /// ```
 pub trait Reduction {
     /// Unit of reduction.
-    type Unit;
+    type Unit<'i>;
 
     /// Returns the identity element of the unit, which can be considered to
     /// the reduced value obtained by reducing zero elements, such that:
@@ -73,8 +73,8 @@ pub trait Reduction {
     ///
     /// For instance, 0 is identity for addition over integers;
     /// and 1 is identity for multiplication.
-    fn identity(&self) -> Self::Unit;
+    fn identity(&self) -> Self::Unit<'_>;
 
     /// Reduces two arguments of `a` and `b` into a single value.
-    fn reduce(&self, a: Self::Unit, b: Self::Unit) -> Self::Unit;
+    fn reduce<'i>(&self, a: Self::Unit<'i>, b: Self::Unit<'i>) -> Self::Unit<'i>;
 }
