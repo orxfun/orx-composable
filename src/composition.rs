@@ -168,7 +168,7 @@ where
     /// ```
     /// use orx_composable::*;
     ///
-    /// pub struct Add;
+    /// struct Add;
     ///
     /// impl Reduction for Add {
     ///     type Unit = usize;
@@ -182,7 +182,7 @@ where
     ///     }
     /// }
     ///
-    /// pub struct StrLen;
+    /// struct StrLen;
     ///
     /// impl Computation for StrLen {
     ///     type In<'i> = &'i str;
@@ -194,7 +194,7 @@ where
     ///     }
     /// }
     ///
-    /// pub struct SliceLen;
+    /// struct SliceLen;
     ///
     /// impl Computation for SliceLen {
     ///     type In<'i> = &'i [bool];
@@ -203,6 +203,18 @@ where
     ///
     ///     fn compute(&self, slice: Self::In<'_>) -> Self::Out {
     ///         slice.len()
+    ///     }
+    /// }
+    ///
+    /// struct NumEvens;
+    ///
+    /// impl Computation for NumEvens {
+    ///     type In<'i> = Vec<u64>;
+    ///
+    ///     type Out = usize;
+    ///
+    ///     fn compute(&self, vec: Self::In<'_>) -> Self::Out {
+    ///         vec.iter().filter(|x| *x % 2 == 0).count()
     ///     }
     /// }
     ///
