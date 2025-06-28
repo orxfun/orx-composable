@@ -1,4 +1,4 @@
-use orx_meta_queue::Empty;
+use orx_meta::queue::Empty;
 
 use crate::{
     Computation, Reduction,

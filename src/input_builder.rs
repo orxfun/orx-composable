@@ -1,4 +1,4 @@
-use orx_meta_queue::TupleQueue;
+use orx_meta::queue::TupleQueue;
 
 /// A type-safe input builder to build the inputs of a computation by adding
 /// input of each computation one by one.

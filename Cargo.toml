@@ -5,4 +5,4 @@ edition = "2024"
 publish = ["artifactory"]
 
 [dependencies]
-orx-meta-queue = { path = "../orx-meta-queue" }
+orx-meta = { path = "../orx-meta" }

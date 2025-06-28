@@ -1,5 +1,5 @@
 use crate::{Computation, Reduction};
-use orx_meta_queue::MetaQueue;
+use orx_meta::queue::MetaQueue;
 
 /// A computation and a reduction, which can be composed since the output
 /// of the computation is the unit of the reduction.

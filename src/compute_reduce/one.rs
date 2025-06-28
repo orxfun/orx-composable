@@ -1,7 +1,7 @@
 use super::com_red::ReducibleComputation;
 use crate::{Computation, Reduction, compute_reduce::many::ReducibleComputationMany};
 use core::marker::PhantomData;
-use orx_meta_queue::One;
+use orx_meta::queue::One;
 
 /// A [`ReducibleComputation`] with one composed computation.
 pub struct ReducibleComputationOne<R, C1> {
