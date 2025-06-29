@@ -1,3 +1,5 @@
+#![allow(unused_imports, dead_code)]
+
 mod cost;
 mod precedence;
 mod sorted_intersecting_swaps;

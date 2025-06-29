@@ -1,12 +1,12 @@
 use crate::{cost::Cost, tour::Tour};
-use orx_composable::Computation;
+use orx_composable::Criterion;
 use orx_iterable::Collection;
 use std::collections::HashSet;
 
 pub struct PrecedenceRelations(HashSet<(usize, usize)>);
 
 impl PrecedenceRelations {
-    fn number_of_violations(&self, tour: Tour) -> usize {
+    fn number_of_violations(&self, tour: &Tour) -> usize {
         let mut count = 0;
         for (i, a) in tour.iter().copied().enumerate() {
             for b in tour.iter().copied().skip(i + 1) {
@@ -23,12 +23,18 @@ pub struct PrecedenceCost {
     cost_per_violation: usize,
 }
 
-// impl Computation for PrecedenceCost {
-//     type In<'i> = &'i PrecedenceRelations;
+impl Criterion for PrecedenceCost {
+    type On<'i> = &'i Tour;
 
-//     type Out = Cost;
+    type In<'i> = &'i PrecedenceRelations;
 
-//     fn compute<'i>(&self, precedence_relations: Self::In<'i>) -> Self::Out {
-//         todo!()
-//     }
-// }
+    type Out<'i> = Cost;
+
+    fn evaluate<'i>(
+        &self,
+        tour: Self::On<'i>,
+        precedence_relations: Self::In<'i>,
+    ) -> Self::Out<'i> {
+        Cost::from(self.cost_per_violation * precedence_relations.number_of_violations(tour))
+    }
+}

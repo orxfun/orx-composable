@@ -1,6 +1,10 @@
-use orx_composable::Reduction;
-
 pub struct Cost(usize);
+
+impl From<usize> for Cost {
+    fn from(value: usize) -> Self {
+        Self(value)
+    }
+}
 
 pub struct AdditiveCost;
 

@@ -12,18 +12,6 @@
 )]
 #![cfg_attr(not(test), no_std)]
 
-#[cfg(test)]
-mod tests;
+mod criterion;
 
-mod composition;
-mod computation;
-/// Module defining the [`ReducibleComputation`] trait and its implementations.
-pub mod compute_reduce;
-mod input_builder;
-mod reduction;
-
-pub use composition::Composition;
-pub use computation::Computation;
-pub use compute_reduce::ReducibleComputation;
-pub use input_builder::InputBuilder;
-pub use reduction::Reduction;
+pub use criterion::Criterion;
