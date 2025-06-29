@@ -21,7 +21,7 @@ impl<R, C1> ReducibleComputationOne<R, C1> {
 impl<R, C1> ReducibleComputation for ReducibleComputationOne<R, C1>
 where
     R: Reduction,
-    for<'i> C1: Computation<Out<'i> = R::Unit<'i>>,
+    C1: Computation<Out = R::Unit>,
 {
     type R = R;
 
@@ -32,21 +32,17 @@ where
     type Compose<C2>
         = ReducibleComputationMany<R, Self, ReducibleComputationOne<R, C2>>
     where
-        for<'i> C2: Computation<Out<'i> = <Self::R as Reduction>::Unit<'i>>;
+        C2: Computation<Out = <Self::R as Reduction>::Unit>;
 
     fn compose<C>(self, other: C) -> Self::Compose<C>
     where
-        for<'i> C: Computation<Out<'i> = <Self::R as Reduction>::Unit<'i>>,
+        C: Computation<Out = <Self::R as Reduction>::Unit>,
     {
         ReducibleComputationMany::new(self, ReducibleComputationOne::new(other))
     }
 
     #[inline(always)]
-    fn compute_reduce<'i>(
-        &self,
-        _: &'i Self::R,
-        input: Self::In<'i>,
-    ) -> <Self::R as Reduction>::Unit<'i> {
+    fn compute_reduce<'i>(&self, _: &Self::R, input: Self::In<'i>) -> <Self::R as Reduction>::Unit {
         self.c1.compute(input)
     }
 }

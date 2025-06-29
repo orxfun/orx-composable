@@ -109,7 +109,7 @@ pub trait Computation {
     type In<'i>;
 
     /// Output of the computation.
-    type Out<'i>;
+    type Out;
 
     /// Computes output for the given `input`.
     ///
@@ -214,5 +214,5 @@ pub trait Computation {
     /// let append = Append;
     /// assert_eq!(append.compute((&"4", '2')), 42.to_string());
     /// ```
-    fn compute<'i>(&self, input: Self::In<'i>) -> Self::Out<'i>;
+    fn compute<'i>(&self, input: Self::In<'i>) -> Self::Out;
 }

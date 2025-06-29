@@ -6,3 +6,6 @@ publish = ["artifactory"]
 
 [dependencies]
 orx-meta = { git = "https://github.com/orxfun/orx-meta" }
+
+[dev-dependencies]
+orx-iterable = "1.3.0"

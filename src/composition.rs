@@ -118,7 +118,7 @@ where
     /// the resulting computation.
     pub fn compose<C2>(self, other: C2) -> Composition<R, C::Compose<C2>>
     where
-        for<'i> C2: Computation<Out<'i> = R::Unit<'i>>,
+        C2: Computation<Out = R::Unit>,
     {
         Composition {
             reduction: self.reduction,
@@ -251,7 +251,7 @@ where
 {
     type In<'i> = C::In<'i>;
 
-    type Out<'i> = R::Unit<'i>;
+    type Out = R::Unit;
 
     /// Computes output for the given `input`.
     ///
@@ -334,8 +334,7 @@ where
     /// assert_eq!(c.compute((("xyz", &[true, false]), vec![1, 2, 3, 4, 5])), 7);
     /// ```
     #[inline(always)]
-    fn compute<'i>(&self, input: Self::In<'i>) -> Self::Out<'i> {
-        // self.computation.compute_reduce(&self.reduction, input)
-        todo!()
+    fn compute<'i>(&self, input: Self::In<'i>) -> Self::Out {
+        self.computation.compute_reduce(&self.reduction, input)
     }
 }
