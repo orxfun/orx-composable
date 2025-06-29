@@ -23,12 +23,12 @@ pub struct PrecedenceCost {
     cost_per_violation: usize,
 }
 
-impl Computation for PrecedenceCost {
-    type In<'i> = &'i PrecedenceRelations;
+// impl Computation for PrecedenceCost {
+//     type In<'i> = &'i PrecedenceRelations;
 
-    type Out = Cost;
+//     type Out = Cost;
 
-    fn compute<'i>(&self, precedence_relations: Self::In<'i>) -> Self::Out {
-        todo!()
-    }
-}
+//     fn compute<'i>(&self, precedence_relations: Self::In<'i>) -> Self::Out {
+//         todo!()
+//     }
+// }
